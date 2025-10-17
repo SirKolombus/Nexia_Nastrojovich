@@ -1,0 +1,174 @@
+/* Launcher Styles */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.launcher-main {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    padding: 20px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* Header */
+.launcher-header {
+    text-align: center;
+    margin-bottom: 40px;
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.launcher-logo {
+    width: 80px;
+    height: 80px;
+    margin-bottom: 15px;
+    border-radius: 50%;
+}
+
+.launcher-title {
+    color: #333;
+    margin: 10px 0;
+    font-weight: 600;
+}
+
+.launcher-subtitle {
+    color: #666;
+    margin: 5px 0;
+}
+
+/* Question Section */
+.launcher-question {
+    text-align: center;
+    margin-bottom: 30px;
+    padding: 15px;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 8px;
+}
+
+.launcher-question h2 {
+    color: #444;
+    margin: 0;
+    font-weight: 500;
+}
+
+/* Tools Grid */
+.launcher-tools {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+/* Tool Button */
+.tool-button {
+    width: 100%;
+    min-height: 120px;
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.95);
+    border: 2px solid transparent;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.tool-button:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+    border-color: #667eea;
+    background: #fff;
+}
+
+.tool-button:active {
+    transform: translateY(-2px);
+}
+
+.tool-button-content {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    text-align: left;
+}
+
+.tool-icon {
+    font-size: 48px;
+    min-width: 60px;
+    text-align: center;
+}
+
+.tool-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.tool-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #333;
+}
+
+.tool-description {
+    font-size: 14px;
+    color: #666;
+    line-height: 1.4;
+}
+
+/* Footer */
+.launcher-footer {
+    margin-top: auto;
+    text-align: center;
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.85);
+    border-radius: 8px;
+}
+
+.text-muted {
+    color: #666;
+}
+
+/* Responsive */
+@media (min-width: 768px) {
+    .launcher-main {
+        max-width: 800px;
+        margin: 0 auto;
+    }
+}
+
+/* Animation */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.launcher-main > * {
+    animation: fadeIn 0.5s ease-out;
+}
+
+.launcher-tools .tool-button:nth-child(1) {
+    animation-delay: 0.1s;
+}
+
+.launcher-tools .tool-button:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.launcher-tools .tool-button:nth-child(3) {
+    animation-delay: 0.3s;
+}

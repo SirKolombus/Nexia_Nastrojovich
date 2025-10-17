@@ -1,0 +1,381 @@
+/* 
+ * Copyright (c) Microsoft Corporation. All rights reserved. Licensed under the MIT license.
+ * See LICENSE in the project root for license information.
+ */
+
+ html,
+ body {
+     width: 100%;
+     height: 100%;
+     margin: 0;
+     padding: 0;
+ }
+ 
+ ul {
+     margin: 0;
+     padding: 0;
+ }
+ 
+.ms-welcome__header {
+    /* align header content to the same inner width as .ms-welcome__main */
+    width: calc(100% - 40px);
+    margin: 0 20px;
+    padding: 12px 0; /* smaller vertical padding */
+    display: -ms-flexbox; display: -webkit-flex; display: flex;
+    -ms-flex-direction: column; -webkit-flex-direction: column; flex-direction: column;
+    -ms-flex-align: stretch; /* align-items: stretch; */ /* allow children to fill width */
+}
+
+.ms-welcome__main {
+    display: -ms-flexbox; display: -webkit-flex; display: flex;
+    -ms-flex-direction: column; -webkit-flex-direction: column; flex-direction: column;
+    /* IE10 doesn't support flex-wrap; omit to satisfy linter; default is nowrap */
+    -ms-flex-align: stretch; /* align-items: stretch; */
+    -ms-flex: 1 0 0; -webkit-flex: 1 0 0; flex: 1 0 0;
+    padding: 10px 20px;
+    overflow-y: auto;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+ 
+ .ms-welcome__main > h2 {
+     width: 100%;
+     /* Center heading without using text-align for IE rule compliance */
+     display: table;
+     margin-left: auto;
+     margin-right: auto;
+     margin-bottom: 30px;
+ }
+ 
+ .ms-welcome__features {
+     list-style-type: none;
+     margin-top: 20px;
+ }
+ 
+ .ms-welcome__features.ms-List .ms-ListItem {
+     padding-bottom: 20px;
+     display: -ms-flexbox; display: -webkit-flex; display: flex;
+ }
+ 
+ .ms-welcome__features.ms-List .ms-ListItem > .ms-Icon {
+     margin-right: 10px;
+ }
+ 
+ .ms-welcome__action.ms-Button--hero {
+     margin-top: 30px;
+ }
+ 
+.ms-Button.ms-Button--hero .ms-Button-label {
+    color: #ffffff;
+}
+
+.ms-Button.ms-Button--hero:hover .ms-Button-label,
+.ms-Button.ms-Button--hero:focus .ms-Button-label{
+    color: #ffffff;
+    cursor: pointer;
+}
+
+
+/* Styly pro vzorkovač */
+
+/* Make only the first line of .ui-field-title bold */
+.ui-field-title {
+    margin-bottom: 5px;
+    display: block;
+    font-weight: 400;
+}
+.ui-field-title::first-line {
+    font-weight: bold;
+}
+
+.ms-Label {
+    font-weight: 400;
+    margin-bottom: 5px;
+    display: block;
+}
+
+/* Ohraničení sekcí azurovou barvou */
+.ms-Grid {
+    border: 2px solid #00bfff;
+    border-radius: 6px;
+    margin-bottom: 18px;
+    background: #fff;
+    padding: 12px 14px 10px 14px;
+    box-sizing: border-box;
+}
+
+/* Header / main image styles (kept separate from .ms-Grid)
+   kept for compatibility if header is used */
+.header-logo {
+    width: 100%;
+    max-width: none;
+    /* aspect-ratio removed for IE compatibility */
+    overflow: hidden;
+    display: block;
+    margin: 0 0 8px 0;
+    box-sizing: border-box;
+}
+.header-logo-img {
+    width: 100%;
+    height: 100%;
+    /* object-fit removed for IE compatibility */
+    display: block;
+}
+
+/* Safety: ensure any textfields inside grid columns never overflow their container */
+.ms-Grid .ms-TextField-field {
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+.ms-Dropdown:focus,
+.ms-TextField-field:focus {
+    border-color: #0078d7;
+    outline: none;
+}
+
+.ms-Button {
+    background-color: #0078d7;
+    border: 1px solid #0078d7;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 2px;
+    cursor: pointer;
+    font-size: 14px;
+    font-family: 'Segoe UI', 'Segoe UI Web (West European)', 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Roboto', 'Helvetica Neue', sans-serif;
+}
+
+.ms-Button:hover {
+    background-color: #106ebe;
+    border-color: #106ebe;
+}
+
+.ms-Button--primary {
+    background-color: #0078d7;
+    border-color: #0078d7;
+}
+
+/* Ensure readonly display fields (like the stacked significance displays) match the sizing
+   behavior of other fields and don't overflow the add-in panel. */
+.ms-TextField-field[readonly] {
+    max-width: 100%;
+    box-sizing: border-box;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.ms-Button--hero {
+    background-color: #0078d7;
+    border-color: #0078d7;
+    font-size: 16px;
+    padding: 12px 24px;
+    width: 100%;
+}
+
+#results {
+    background-color: #f3f2f1;
+    padding: 15px;
+    border-radius: 4px;
+    border-left: 4px solid #0078d7;
+}
+
+#results h3 {
+    margin-top: 0;
+    color: #323130;
+}
+
+#sample-info,
+#sample-list {
+    color: #605e5c;
+    line-height: 1.4;
+}
+
+b {
+    font-weight: bold;
+}
+
+/* Modal styles */
+.modal-overlay {
+    position: fixed;
+    top: 0; right: 0; bottom: 0; left: 0;
+    background: rgba(0,0,0,0.4);
+    display: -ms-flexbox; display: -webkit-flex; display: flex;
+    -ms-flex-align: center; /* align-items: center; */
+    -ms-flex-pack: center; /* justify-content: center; */
+    z-index: 1000;
+}
+.modal {
+    background: #fff;
+    padding: 16px;
+    border-radius: 6px;
+    width: 340px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.2);
+    /* Make modal usable on small heights */
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    max-height: calc(100vh - 40px);
+    overflow-y: auto;
+}
+.modal h3 { cursor: move; -ms-user-select: none; -webkit-user-select: none; user-select: none; }
+.modal input[type=number] {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 8px;
+    box-sizing: border-box;
+}
+
+.modal .modal-row {
+    margin-bottom: 10px;
+    display: -ms-flexbox; display: flex;
+    -ms-flex-direction: column; flex-direction: column;
+}
+.modal .modal-row label {
+    margin-bottom: 6px;
+    font-weight: 600;
+}
+.modal .modal-row select {
+    padding: 8px;
+    border: 1px solid #a19f9d;
+    border-radius: 3px;
+}
+
+/* Notification */
+.notification {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: #323130;
+    color: #fff;
+    padding: 10px 14px;
+    border-radius: 4px;
+    z-index: 1100;
+}
+
+/* Progress Bar styles for chunk loading */
+.progress-container {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: #fff;
+    border: 2px solid #0078d7;
+    border-radius: 8px;
+    padding: 20px;
+    width: 400px;
+    z-index: 1200;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+}
+
+.progress-header {
+    display: -ms-flexbox; display: flex;
+    -ms-flex-pack: justify; /* justify-content: space-between; */
+    -ms-flex-align: center; /* align-items: center; */
+    margin-bottom: 15px;
+}
+
+.progress-header span {
+    font-weight: 600;
+    color: #323130;
+}
+
+.progress-cancel-btn {
+    background: #d13438;
+    color: #fff;
+    border: none;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
+    font-size: 12px;
+    display: -ms-flexbox; display: flex;
+    -ms-flex-align: center; /* align-items: center; */
+    -ms-flex-pack: center; /* justify-content: center; */
+}
+
+.progress-cancel-btn:hover {
+    background: #b91c21;
+}
+
+.progress-bar-container {
+    background: #f3f2f1;
+    border-radius: 4px;
+    height: 12px;
+    margin-bottom: 12px;
+    overflow: hidden;
+}
+
+.progress-bar {
+    background: linear-gradient(90deg, #0078d7, #106ebe);
+    height: 100%;
+    width: 0%;
+    transition: width 0.3s ease;
+    border-radius: 4px;
+}
+
+.progress-details {
+    display: -ms-flexbox; display: flex;
+    -ms-flex-pack: justify; /* justify-content: space-between; */
+    -ms-flex-align: center; /* align-items: center; */
+    font-size: 12px;
+    color: #605e5c;
+}
+
+.progress-eta {
+    font-style: italic;
+}
+
+/* Utility classes extracted from inline styles to satisfy lint rules */
+.hidden { display: none; }
+.flex { display: -ms-flexbox; display: flex; }
+.col { display: -ms-flexbox; display: flex; -ms-flex-direction: column; flex-direction: column; }
+.self-start { -ms-flex-item-align: start; /* align-self: flex-start; */ }
+.self-center { -ms-flex-item-align: center; /* align-self: center; */ }
+
+/* Spacing helpers to emulate flex gap in IE */
+.row-space-8 > * + * { margin-left: 8px; }
+.row-space-12 > * + * { margin-left: 12px; }
+.col-space-8 > * + * { margin-top: 8px; }
+
+.mt-6 { margin-top: 6px; }
+.mt-8 { margin-top: 8px; }
+.mt-10 { margin-top: 10px; }
+.mt-12 { margin-top: 12px; }
+.mt-20 { margin-top: 20px; }
+
+.mb-8 { margin-bottom: 8px; }
+.mb-12 { margin-bottom: 12px; }
+.mb-20 { margin-bottom: 20px; }
+
+.mr-10 { margin-right: 10px; }
+
+.w-100 { width: 100%; }
+.w-160 { width: 160px; }
+.w-220 { width: 220px; }
+.w-240 { width: 240px; }
+
+.h-8 { height: 8px; }
+.h-12 { height: 12px; }
+.h-160 { height: 160px; }
+
+.flex-1 { -ms-flex: 1 0 0; flex: 1 0 0; }
+
+.p-6-8 { padding: 6px 8px; }
+
+.text-muted { color: #666; }
+.italic { font-style: italic; }
+.text-12 { font-size: 12px; }
+
+/* Specific hero image styling extracted from inline */
+.hero-img {
+    width: 240px;
+    height: 160px;
+    display: block;
+    margin: 0 auto;
+}
+
+/* Centering helper for block elements */
+.mx-auto { display: block; margin-left: auto; margin-right: auto; }

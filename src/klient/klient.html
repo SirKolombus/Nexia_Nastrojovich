@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="cs">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Prověrka klienta - Nexia</title>
+
+    <!-- Office JavaScript API -->
+    <script type="text/javascript" src="https://appsforoffice.microsoft.com/lib/1/hosted/office.js"></script>
+
+    <!-- Fluent UI -->
+    <link rel="stylesheet" href="https://res-1.cdn.office.net/files/fabric-cdn-prod_20230815.002/office-ui-fabric-core/11.1.0/css/fabric.min.css"/>
+
+    <!-- Styles -->
+    <link href="../shared/styles.css" rel="stylesheet" type="text/css" />
+    <link href="klient.css" rel="stylesheet" type="text/css" />
+</head>
+
+<body class="ms-font-m ms-Fabric">
+    <button class="back-button" onclick="window.location.href='../launcher.html'">
+        ← Zpět
+    </button>
+
+    <section id="sideload-msg" class="ms-welcome__main">
+        <h2 class="ms-font-xl">Prosím načtěte váš doplněk.</h2>
+    </section>
+
+    <main id="app-body" class="hidden">
+        <header class="tool-header">
+            <h1 class="ms-font-xxl">🔍 Prověrka klienta</h1>
+            <p class="ms-font-m text-muted">Nástroj pro prověření požadavků klienta</p>
+        </header>
+
+        <div class="content-container">
+            <div class="info-box">
+                <h2 class="ms-font-xl">🚧 V přípravě</h2>
+                <p class="ms-font-m">
+                    Tento nástroj je momentálně ve vývoji. Brzy zde najdete kompletní funkcionalitu
+                    pro prověrku požadavků klientů.
+                </p>
+                <p class="ms-font-m mt-20">
+                    <strong>Plánované funkce:</strong>
+                </p>
+                <ul class="feature-list">
+                    <li>Automatická kontrola požadavků</li>
+                    <li>Validace dat klienta</li>
+                    <li>Generování reportů</li>
+                    <li>Export výsledků</li>
+                </ul>
+            </div>
+
+            <div class="action-section mt-20">
+                <button id="btn-back-launcher" class="ms-Button ms-Button--primary">
+                    <span class="ms-Button-label">Zpět na hlavní menu</span>
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <div id="notification" class="notification hidden"></div>
+    <script src="klient.js"></script>
+</body>
+
+</html>

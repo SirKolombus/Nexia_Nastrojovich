@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="cs">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Nástrojovič - Nexia</title>
+
+    <!-- Office JavaScript API -->
+    <script type="text/javascript" src="https://appsforoffice.microsoft.com/lib/1/hosted/office.js"></script>
+
+    <!-- Fluent UI -->
+    <link rel="stylesheet" href="https://res-1.cdn.office.net/files/fabric-cdn-prod_20230815.002/office-ui-fabric-core/11.1.0/css/fabric.min.css"/>
+
+    <!-- Launcher styles -->
+    <link href="launcher.css" rel="stylesheet" type="text/css" />
+</head>
+
+<body class="ms-font-m ms-Fabric">
+    <section id="sideload-msg" class="ms-welcome__main">
+        <h2 class="ms-font-xl">Prosím <a target="_blank" rel="noopener noreferrer" href="https://learn.microsoft.com/office/dev/add-ins/testing/test-debug-office-add-ins#sideload-an-office-add-in-for-testing">načtěte</a> váš doplněk pro zobrazení obsahu.</h2>
+    </section>
+
+    <main id="app-body" class="launcher-main hidden">
+        <!-- Header -->
+        <header class="launcher-header">
+            <img src="../../assets/logo.png" alt="Nexia Nástrojovič" class="launcher-logo" />
+            <h1 class="ms-font-xxl launcher-title">Nástrojovič</h1>
+            <p class="ms-font-m launcher-subtitle">Univerzální sada nástrojů pro audit</p>
+        </header>
+
+        <!-- Main Question -->
+        <div class="launcher-question">
+            <h2 class="ms-font-xl">Co potřebuji?</h2>
+        </div>
+
+        <!-- Tool Selection Buttons -->
+        <div class="launcher-tools">
+            <!-- Tool 1: Sampler -->
+            <button id="btn-sampler" class="tool-button ms-Button ms-Button--compound">
+                <div class="tool-button-content">
+                    <div class="tool-icon">📊</div>
+                    <div class="tool-info">
+                        <span class="ms-Button-label tool-title">Potřebuji vzorek</span>
+                        <span class="ms-Button-description tool-description">
+                            Auditní vzorkovač - náhodný výběr pro TVS a testy kontrol
+                        </span>
+                    </div>
+                </div>
+            </button>
+
+            <!-- Tool 2: Terminology -->
+            <button id="btn-terminology" class="tool-button ms-Button ms-Button--compound">
+                <div class="tool-button-content">
+                    <div class="tool-icon">📚</div>
+                    <div class="tool-info">
+                        <span class="ms-Button-label tool-title">Něco potřebuji zjistit</span>
+                        <span class="ms-Button-description tool-description">
+                            Auditní terminologie - vyhledávání pojmů a definic
+                        </span>
+                    </div>
+                </div>
+            </button>
+
+            <!-- Tool 3: Client Review -->
+            <button id="btn-client" class="tool-button ms-Button ms-Button--compound">
+                <div class="tool-button-content">
+                    <div class="tool-icon">🔍</div>
+                    <div class="tool-info">
+                        <span class="ms-Button-label tool-title">Prověrka klienta</span>
+                        <span class="ms-Button-description tool-description">
+                            Nástroj pro prověření požadavků klienta
+                        </span>
+                    </div>
+                </div>
+            </button>
+        </div>
+
+        <!-- Footer -->
+        <footer class="launcher-footer">
+            <p class="ms-font-s text-muted">
+                Autor: Tomáš Pavlovič | Vyvinuto pomocí AI
+            </p>
+            <p class="ms-font-xs text-muted">
+                Verze 1.0.0 | © 2025 Nexia
+            </p>
+        </footer>
+    </main>
+
+    <script src="launcher.js"></script>
+</body>
+
+</html>
