@@ -16,6 +16,25 @@
     <!-- For more information on Fluent UI, visit https://developer.microsoft.com/fluentui#/. -->
     <link rel="stylesheet" href="https://res-1.cdn.office.net/files/fabric-cdn-prod_20230815.002/office-ui-fabric-core/11.1.0/css/fabric.min.css"/>
 
+    <!-- Critical fallback styles to ensure correct look even if main CSS fails to load or host theme enforces dark mode -->
+    <style>
+        /* Always hide elements marked as hidden (allow JS to override via inline styles) */
+        .hidden { display: none; }
+
+        /* Ensure white content area regardless of host dark theme */
+        .ms-welcome__main { background: #ffffff !important; color: #323130; }
+
+        /* Section visuals approximate original look */
+        .ms-Grid { border: 2px solid #00bfff; border-radius: 6px; background: #ffffff; padding: 12px 14px 10px 14px; box-sizing: border-box; }
+
+        /* Primary/hero button baseline */
+        .ms-Button { background-color: #0078d7; border: 1px solid #0078d7; color: #fff; }
+        .ms-Button.ms-Button--hero { background-color: #0078d7; border-color: #0078d7; color: #fff; width: 100%; }
+
+        /* Make modal overlay dimmer but keep hidden if .hidden is present */
+        .modal-overlay { background: rgba(0,0,0,0.4); }
+    </style>
+
     <!-- Template styles -->
     <link href="sampler.css" rel="stylesheet" type="text/css" />
 </head>

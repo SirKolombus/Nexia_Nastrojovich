@@ -3,6 +3,7 @@
 const devCerts = require("office-addin-dev-certs");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
+// const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 
 const urlDev = "https://localhost:3000/";
 const urlProd = "https://sirkolombus.github.io/Nexia_Nastrojovich/"; // Production URL
@@ -20,7 +21,7 @@ module.exports = async (env, options) => {
       polyfill: ["core-js/stable", "regenerator-runtime/runtime"],
       launcher: ["./src/launcher/launcher.js", "./src/launcher/launcher.html"],
       sampler: ["./src/sampler/sampler.js", "./src/sampler/sampler.html"],
-      terminologie: ["./src/terminologie/terminologie.ts", "./src/terminologie/terminologie.html"],
+  terminologie: ["./src/terminologie/terminologie.js", "./src/terminologie/terminologie.html"],
       klient: ["./src/klient/klient.js", "./src/klient/klient.html"],
       commands: "./src/commands/commands.js",
     },
@@ -28,7 +29,7 @@ module.exports = async (env, options) => {
       clean: true,
     },
     resolve: {
-      extensions: [".html", ".js", ".ts"],
+      extensions: [".html", ".js"],
     },
     module: {
       rules: [
@@ -39,16 +40,7 @@ module.exports = async (env, options) => {
             loader: "babel-loader",
           },
         },
-        {
-          test: /\.ts$/,
-          exclude: /node_modules/,
-          use: {
-            loader: "babel-loader",
-            options: {
-              presets: ["@babel/preset-typescript"],
-            },
-          },
-        },
+        // TypeScript support removed; project is pure JavaScript now
         {
           test: /\.html$/,
           exclude: /node_modules/,
@@ -61,9 +53,13 @@ module.exports = async (env, options) => {
             filename: "assets/[name][ext][query]",
           },
         },
+        // Disable CSS processing - we copy them directly
         {
           test: /\.css$/,
-          use: ["style-loader", "css-loader"],
+          type: "asset/resource",
+          generator: {
+            filename: "[name][ext]",
+          },
         },
       ],
     },
@@ -103,12 +99,16 @@ module.exports = async (env, options) => {
         chunks: ["polyfill", "commands"],
       }),
       
-      // Copy assets and manifest
+      // Copy assets, CSS and manifest
       new CopyWebpackPlugin({
         patterns: [
           {
             from: "assets/*",
             to: "assets/[name][ext][query]",
+          },
+          {
+            from: "src/**/*.css",
+            to: "[name][ext]",
           },
           {
             from: "manifest*.xml",

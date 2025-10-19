@@ -13,6 +13,14 @@
     <!-- For more information on Fluent UI, visit https://developer.microsoft.com/fluentui#/. -->
     <link rel="stylesheet" href="https://res-1.cdn.office.net/files/fabric-cdn-prod_20230815.002/office-ui-fabric-core/11.1.0/css/fabric.min.css"/>
 
+    <!-- Critical fallback styles to ensure correct look even if main CSS fails to load or host theme enforces dark mode -->
+    <style>
+        .hidden { display: none; }
+        .ms-terminology__main { background: #ffffff !important; color: #323130; }
+        header.ms-terminology__header { background-color: #0078d7 !important; }
+        .ms-SearchBox-field { background: #ffffff; color: #323130; }
+    </style>
+
     <!-- Template styles -->
     <link href="terminologie.css" rel="stylesheet" type="text/css" />
 </head>
