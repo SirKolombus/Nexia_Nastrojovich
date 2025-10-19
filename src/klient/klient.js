@@ -20,6 +20,4 @@ function initialize() {
   document.getElementById("btn-back-launcher").onclick = () => {
     navigateToLauncher();
   };
-  
-  showNotification("Nástroj Prověrka klienta je ve vývoji", "info");
 }
