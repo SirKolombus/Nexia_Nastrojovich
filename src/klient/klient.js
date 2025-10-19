@@ -228,19 +228,24 @@ function getFormValues() {
       y0: year
     },
     aktiva: {
-      y2: parseFloat(document.getElementById("aktiva-y2").value) || 0,
-      y1: parseFloat(document.getElementById("aktiva-y1").value) || 0,
-      y0: parseFloat(document.getElementById("aktiva-y0").value) || 0
+      y2: yearDataStore.y2 ? yearDataStore.y2.aktiva : 0,
+      y1: yearDataStore.y1 ? yearDataStore.y1.aktiva : 0,
+      y0: yearDataStore.y0 ? yearDataStore.y0.aktiva : 0
     },
     obrat: {
-      y2: parseFloat(document.getElementById("obrat-y2").value) || 0,
-      y1: parseFloat(document.getElementById("obrat-y1").value) || 0,
-      y0: parseFloat(document.getElementById("obrat-y0").value) || 0
+      y2: yearDataStore.y2 ? yearDataStore.y2.obrat : 0,
+      y1: yearDataStore.y1 ? yearDataStore.y1.obrat : 0,
+      y0: yearDataStore.y0 ? yearDataStore.y0.obrat : 0
     },
     zamestnanci: {
-      y2: parseFloat(document.getElementById("zamestnanci-y2").value) || 0,
-      y1: parseFloat(document.getElementById("zamestnanci-y1").value) || 0,
-      y0: parseFloat(document.getElementById("zamestnanci-y0").value) || 0
+      y2: yearDataStore.y2 ? yearDataStore.y2.zamestnanci : 0,
+      y1: yearDataStore.y1 ? yearDataStore.y1.zamestnanci : 0,
+      y0: yearDataStore.y0 ? yearDataStore.y0.zamestnanci : 0
+    },
+    zdroje: {
+      y2: yearDataStore.y2 ? yearDataStore.y2.zdroj : '',
+      y1: yearDataStore.y1 ? yearDataStore.y1.zdroj : '',
+      y0: yearDataStore.y0 ? yearDataStore.y0.zdroj : ''
     }
   };
   
@@ -262,12 +267,10 @@ function validateData(data) {
   }
   
   // Check if at least some data is filled
-  const hasData = data.aktiva.y0 > 0 || data.aktiva.y1 > 0 || data.aktiva.y2 > 0 ||
-                  data.obrat.y0 > 0 || data.obrat.y1 > 0 || data.obrat.y2 > 0 ||
-                  data.zamestnanci.y0 > 0 || data.zamestnanci.y1 > 0 || data.zamestnanci.y2 > 0;
+  const hasData = yearDataStore.y2 || yearDataStore.y1 || yearDataStore.y0;
   
   if (!hasData) {
-    showNotification("Prosím vyplňte alespoň některé finanční údaje", "error");
+    showNotification("Prosím vyplňte údaje alespoň pro jeden rok", "error");
     return false;
   }
   
@@ -417,24 +420,29 @@ async function printParameters() {
       
       // Prepare data for printing
       const parameters = [
-        ["PROVĚRKA KLIENTA - PARAMETRY", ""],
-        ["", ""],
-        ["Rozhodný den:", `${monthNames[data.month]} ${data.year}`],
-        ["", ""],
-        ["FINANČNÍ ÚDAJE", ""],
+        ["PROVĚRKA KLIENTA - PARAMETRY", "", "", ""],
+        ["", "", "", ""],
+        ["Rozhodný den:", `${monthNames[data.month]} ${data.year}`, "", ""],
+        ["", "", "", ""],
+        ["FINANČNÍ ÚDAJE", "", "", ""],
         ["", data.years.y2, data.years.y1, data.years.y0],
         ["Aktiva (tis. Kč)", data.aktiva.y2, data.aktiva.y1, data.aktiva.y0],
         ["Obrat (tis. Kč)", data.obrat.y2, data.obrat.y1, data.obrat.y0],
         ["Průměrný počet zaměstnanců", data.zamestnanci.y2, data.zamestnanci.y1, data.zamestnanci.y0],
-        ["", ""],
-        ["VYHODNOCENÍ", ""],
-        ["Průměrná aktiva:", formatNumber(avg.aktiva, 0) + " tis. Kč"],
-        ["Průměrný obrat:", formatNumber(avg.obrat, 0) + " tis. Kč"],
-        ["Průměrný počet zaměstnanců:", formatNumber(avg.zamestnanci, 1)],
-        ["", ""],
-        ["Kategorie:", evaluationResults.category],
-        ["", ""],
-        ["Datum vytvoření:", new Date().toLocaleString("cs-CZ")]
+        ["", "", "", ""],
+        ["ZDROJE DAT", "", "", ""],
+        [`Rok ${data.years.y2}:`, data.zdroje.y2 || 'N/A', "", ""],
+        [`Rok ${data.years.y1}:`, data.zdroje.y1 || 'N/A', "", ""],
+        [`Rok ${data.years.y0}:`, data.zdroje.y0 || 'N/A', "", ""],
+        ["", "", "", ""],
+        ["VYHODNOCENÍ", "", "", ""],
+        ["Průměrná aktiva:", formatNumber(avg.aktiva, 0) + " tis. Kč", "", ""],
+        ["Průměrný obrat:", formatNumber(avg.obrat, 0) + " tis. Kč", "", ""],
+        ["Průměrný počet zaměstnanců:", formatNumber(avg.zamestnanci, 1), "", ""],
+        ["", "", "", ""],
+        ["Kategorie:", evaluationResults.category, "", ""],
+        ["", "", "", ""],
+        ["Datum vytvoření:", new Date().toLocaleString("cs-CZ"), "", ""]
       ];
       
       // Find a good place to insert (first empty row)
