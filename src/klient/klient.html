@@ -30,23 +30,91 @@
         </header>
 
         <div class="content-container">
-            <div class="info-box">
-                <h2 class="ms-font-xl">🚧 V přípravě</h2>
-                <p class="ms-font-m">
-                    Tento nástroj je momentálně ve vývoji. Brzy zde najdete kompletní funkcionalitu
-                    pro prověrku požadavků klientů.
-                </p>
-                <p class="ms-font-m mt-20">
-                    <strong>Plánované funkce:</strong>
-                </p>
-                <ul class="feature-list">
-                    <li>Automatická kontrola požadavků</li>
-                    <li>Validace dat klienta</li>
-                    <li>Generování reportů</li>
-                    <li>Export výsledků</li>
-                </ul>
+            <!-- Step 1: Reporting Date Selection -->
+            <div class="section-box mb-20">
+                <h3 class="ms-font-l section-title">1. Rozhodný den</h3>
+                <div class="form-row">
+                    <div class="form-field">
+                        <label class="ms-Label">Měsíc:</label>
+                        <select id="reporting-month" class="ms-Dropdown">
+                            <option value="">-Vyberte-</option>
+                            <option value="1">Leden</option>
+                            <option value="2">Únor</option>
+                            <option value="3">Březen</option>
+                            <option value="4">Duben</option>
+                            <option value="5">Květen</option>
+                            <option value="6">Červen</option>
+                            <option value="7">Červenec</option>
+                            <option value="8">Srpen</option>
+                            <option value="9">Září</option>
+                            <option value="10">Říjen</option>
+                            <option value="11">Listopad</option>
+                            <option value="12">Prosinec</option>
+                        </select>
+                    </div>
+                    <div class="form-field">
+                        <label class="ms-Label">Rok:</label>
+                        <input type="number" id="reporting-year" class="ms-TextField-field" placeholder="např. 2025" min="2000" max="2099" />
+                    </div>
+                </div>
             </div>
 
+            <!-- Step 2: Financial Data Entry -->
+            <div class="section-box mb-20">
+                <h3 class="ms-font-l section-title">2. Finanční údaje</h3>
+                <p class="ms-font-s text-muted mb-12">Klikněte na rok pro vyplnění údajů</p>
+                
+                <div class="year-buttons">
+                    <button id="btn-year-2" class="year-button ms-Button" data-year="y2">
+                        <div class="year-button-content">
+                            <div class="year-label" id="year-label-2"></div>
+                            <div class="year-status" id="year-status-2">Nevyplněno</div>
+                        </div>
+                    </button>
+                    
+                    <button id="btn-year-1" class="year-button ms-Button" data-year="y1">
+                        <div class="year-button-content">
+                            <div class="year-label" id="year-label-1"></div>
+                            <div class="year-status" id="year-status-1">Nevyplněno</div>
+                        </div>
+                    </button>
+                    
+                    <button id="btn-year-0" class="year-button ms-Button" data-year="y0">
+                        <div class="year-button-content">
+                            <div class="year-label" id="year-label-0"></div>
+                            <div class="year-status" id="year-status-0">Nevyplněno</div>
+                        </div>
+                    </button>
+                </div>
+                
+                <!-- Summary of entered data -->
+                <div id="data-summary" class="data-summary hidden mt-20">
+                    <h4 class="ms-font-m">Přehled zadaných údajů:</h4>
+                    <div id="summary-content"></div>
+                </div>
+            </div>
+
+            <!-- Step 3: Evaluate Button -->
+            <div class="action-section mb-20">
+                <button id="btn-evaluate" class="ms-Button ms-Button--primary">
+                    <span class="ms-Button-label">Vyhodnotit údaje</span>
+                </button>
+            </div>
+
+            <!-- Step 4: Results Display -->
+            <div id="results-section" class="section-box mb-20 hidden">
+                <h3 class="ms-font-l section-title">3. Výsledek vyhodnocení</h3>
+                <div id="results-content" class="results-content"></div>
+            </div>
+
+            <!-- Step 5: Print Button -->
+            <div id="print-section" class="action-section mb-20 hidden">
+                <button id="btn-print" class="ms-Button ms-Button--primary">
+                    <span class="ms-Button-label">Vytisknout parametry</span>
+                </button>
+            </div>
+
+            <!-- Back to Menu -->
             <div class="action-section mt-20">
                 <button id="btn-back-launcher" class="ms-Button ms-Button--primary">
                     <span class="ms-Button-label">Zpět na hlavní menu</span>
@@ -56,6 +124,48 @@
     </main>
 
     <div id="notification" class="notification hidden"></div>
+    
+    <!-- Modal for Year Data Entry -->
+    <div id="year-modal" class="modal-overlay hidden">
+        <div class="modal-dialog">
+            <div class="modal-header">
+                <h2 id="modal-year-title" class="ms-font-xl">Vyplnit údaje pro rok</h2>
+                <button id="modal-close" class="modal-close-btn" aria-label="Zavřít" title="Zavřít">
+                    <i class="ms-Icon ms-Icon--Cancel"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="modal-field">
+                    <label class="ms-Label" for="modal-aktiva">Aktiva (tis. Kč):</label>
+                    <input type="number" id="modal-aktiva" class="ms-TextField-field" placeholder="Zadejte aktiva" />
+                </div>
+                
+                <div class="modal-field">
+                    <label class="ms-Label" for="modal-obrat">Obrat (tis. Kč):</label>
+                    <input type="number" id="modal-obrat" class="ms-TextField-field" placeholder="Zadejte obrat" />
+                </div>
+                
+                <div class="modal-field">
+                    <label class="ms-Label" for="modal-zamestnanci">Průměrný stav zaměstnanců:</label>
+                    <input type="number" id="modal-zamestnanci" class="ms-TextField-field" placeholder="Zadejte počet zaměstnanců" />
+                </div>
+                
+                <div class="modal-field">
+                    <label class="ms-Label" for="modal-zdroj">Vyplňte zdroj těchto dat:</label>
+                    <textarea id="modal-zdroj" class="ms-TextField-field" rows="3" placeholder="např. Výroční zpráva 2024, Účetní závěrka, atd."></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="modal-save" class="ms-Button ms-Button--primary">
+                    <span class="ms-Button-label">Uložit údaje</span>
+                </button>
+                <button id="modal-cancel" class="ms-Button">
+                    <span class="ms-Button-label">Zrušit</span>
+                </button>
+            </div>
+        </div>
+    </div>
+    
     <script src="klient.js"></script>
 </body>
 

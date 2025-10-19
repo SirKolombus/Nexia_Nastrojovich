@@ -333,6 +333,14 @@ Office.onReady((info) => {
     document.getElementById("sideload-msg").style.display = "none";
     document.getElementById("app-body").style.display = "flex";
     
+  // Back to launcher button
+  const btnBackLauncher = document.getElementById("btn-back-launcher");
+  if (btnBackLauncher) {
+    btnBackLauncher.onclick = () => {
+      window.location.href = 'launcher.html';
+    };
+  }
+
   // Nastavení event listenerů (s kontrolou existence prvků)
   const setReliabilityBtn = document.getElementById("set-reliability");
   if (setReliabilityBtn) setReliabilityBtn.onclick = openReliabilityDialog;

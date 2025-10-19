@@ -15,6 +15,14 @@ Office.onReady((info) => {
     if (sideload) sideload.style.display = "none";
     if (appBody) appBody.style.display = "flex";
 
+    // Back to launcher button
+    const btnBackLauncher = document.getElementById("btn-back-launcher");
+    if (btnBackLauncher) {
+      btnBackLauncher.onclick = () => {
+        window.location.href = 'launcher.html';
+      };
+    }
+
     initializeTerminologyTree();
     setupSearchFunctionality();
     setupModal();

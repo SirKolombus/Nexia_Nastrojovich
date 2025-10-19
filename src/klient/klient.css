@@ -69,3 +69,281 @@ body {
 main {
   padding: 20px;
 }
+
+/* Section Boxes */
+.section-box {
+  background: #ffffff;
+  border: 2px solid #667eea;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.section-title {
+  margin: 0 0 15px 0;
+  color: #667eea;
+  font-weight: 600;
+}
+
+/* Form Layout */
+.form-row {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.form-field {
+  flex: 1;
+  min-width: 200px;
+}
+
+.form-field label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+
+/* Year Buttons */
+.year-buttons {
+  display: flex;
+  gap: 15px;
+  flex-wrap: wrap;
+  margin-top: 15px;
+}
+
+.year-button {
+  flex: 1;
+  min-width: 180px;
+  padding: 20px;
+  background: white;
+  border: 2px solid #667eea;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.year-button:hover {
+  background: #f0f0ff;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(102, 126, 234, 0.2);
+}
+
+.year-button.filled {
+  background: #e8f5e9;
+  border-color: #4caf50;
+}
+
+.year-button.filled:hover {
+  background: #c8e6c9;
+}
+
+.year-button-content {
+  text-align: center;
+}
+
+.year-label {
+  font-size: 18px;
+  font-weight: 600;
+  color: #667eea;
+  margin-bottom: 8px;
+}
+
+.year-button.filled .year-label {
+  color: #4caf50;
+}
+
+.year-status {
+  font-size: 12px;
+  color: #999;
+}
+
+.year-button.filled .year-status {
+  color: #4caf50;
+  font-weight: 600;
+}
+
+/* Data Summary */
+.data-summary {
+  background: #f8f9fa;
+  padding: 15px;
+  border-radius: 6px;
+  border-left: 4px solid #667eea;
+}
+
+.data-summary h4 {
+  margin: 0 0 10px 0;
+  color: #667eea;
+}
+
+.summary-item {
+  padding: 8px 0;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.summary-item:last-child {
+  border-bottom: none;
+}
+
+.summary-year {
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 5px;
+}
+
+.summary-values {
+  font-size: 13px;
+  color: #666;
+  margin-left: 15px;
+}
+
+/* Modal */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+}
+
+.modal-overlay.hidden {
+  display: none;
+}
+
+.modal-dialog {
+  background: white;
+  border-radius: 8px;
+  max-width: 500px;
+  width: 90%;
+  max-height: 90vh;
+  overflow: auto;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.modal-header {
+  padding: 20px;
+  border-bottom: 1px solid #e0e0e0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-radius: 8px 8px 0 0;
+}
+
+.modal-header h2 {
+  margin: 0;
+  color: white;
+}
+
+.modal-close-btn {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 24px;
+  cursor: pointer;
+  padding: 0;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: background 0.2s;
+}
+
+.modal-close-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.modal-body {
+  padding: 20px;
+}
+
+.modal-field {
+  margin-bottom: 20px;
+}
+
+.modal-field label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+
+.modal-field input,
+.modal-field textarea {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.modal-field textarea {
+  resize: vertical;
+  font-family: inherit;
+  padding: 8px;
+}
+
+.modal-footer {
+  padding: 15px 20px;
+  border-top: 1px solid #e0e0e0;
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+/* Results */
+.results-content {
+  padding: 15px;
+  background: #f8f9fa;
+  border-radius: 6px;
+  line-height: 1.6;
+}
+
+.result-item {
+  padding: 10px 0;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.result-item:last-child {
+  border-bottom: none;
+}
+
+.result-label {
+  font-weight: 600;
+  color: #333;
+}
+
+.result-value {
+  color: #666;
+  margin-left: 10px;
+}
+
+.result-success {
+  color: #4caf50;
+  font-weight: 600;
+}
+
+.result-warning {
+  color: #ff9800;
+  font-weight: 600;
+}
+
+.result-error {
+  color: #f44336;
+  font-weight: 600;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .data-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .grid-header .grid-cell:not(:first-child),
+  .grid-row .grid-cell:not(:first-child) {
+    display: none;
+  }
+}
