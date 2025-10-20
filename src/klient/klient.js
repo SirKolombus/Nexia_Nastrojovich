@@ -482,6 +482,42 @@ function evaluateData() {
 }
 
 /**
+ * Get official category for the current year based on the last two years' data
+ */
+function getOfficialCategory(categories) {
+  // Kategorie pro aktuální rok (y0) podle dvou předchozích let (y2, y1) a aktuálního roku (y0)
+  // Pokud v posledních dvou letech byla vyšší kategorie, mění se
+  // Pokud ne, zůstává původní
+  // Vstup: { y3, y2, y1, y0 }
+  // Výstup: string
+  // Pokud některý z předchozích let chybí, bere se poslední dostupná
+  const keys = ['y3', 'y2', 'y1', 'y0'];
+  // Sestav pole kategorií (od nejstarší po nejnovější)
+  const cats = keys.map(k => categories[k]).filter(Boolean);
+  if (cats.length < 3) return 'Nedostatek dat';
+  // Pro aktuální rok (y0) se díváme na y0, y1, y2
+  // Najdeme nejnižší kategorii z těchto tří let
+  // Kategorie: Mikro < Malá < Střední < Velká
+  const order = [
+    'Mikro účetní jednotka',
+    'Malá účetní jednotka',
+    'Střední účetní jednotka',
+    'Velká účetní jednotka'
+  ];
+  // Zjistíme indexy kategorií
+  const idxs = [categories.y0, categories.y1, categories.y2].map(cat => order.indexOf(cat));
+  // Nejvyšší dosažená kategorie v posledních 3 letech
+  const maxIdx = Math.max(...idxs);
+  // Počítáme, kolikrát se v posledních 2 letech (y1, y2) vyskytla max kategorie
+  const prevIdxs = [categories.y1, categories.y2].map(cat => order.indexOf(cat));
+  const countMax = prevIdxs.filter(idx => idx === maxIdx).length;
+  // Pokud v obou předchozích letech byla max kategorie, mění se
+  if (countMax === 2) return order[maxIdx];
+  // Jinak zůstává kategorie aktuálního roku
+  return categories.y0 || 'Nedostatek dat';
+}
+
+/**
  * Display evaluation results
  */
 function displayResults(results) {
@@ -509,6 +545,10 @@ function displayResults(results) {
     <div class="result-item">
       <span class="result-label">Rok ${results.data.years.y0}:</span>
       <span class="result-value result-success">${results.categories.y0 ?? '—'}</span>
+    </div>
+    <div class="result-item result-official">
+      <span class="result-label">Pro kontrolovaný rok účetní jednotka je vnímána za:</span>
+      <span class="result-value result-success">${getOfficialCategory(results.categories)}</span>
     </div>
   `;
   
