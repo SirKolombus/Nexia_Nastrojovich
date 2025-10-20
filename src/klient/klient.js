@@ -4,6 +4,7 @@
 function restartTool() {
   // Clear year data store
   yearDataStore = {
+    y3: null,
     y2: null,
     y1: null,
     y0: null
@@ -14,6 +15,10 @@ function restartTool() {
   // Reset accounting period to current year
   const currentYear = new Date().getFullYear();
   document.getElementById("accounting-period-start").value = `${currentYear}-01-01`;
+  // Clear unit info fields
+  document.getElementById("unit-name").value = "";
+  document.getElementById("unit-ico").value = "";
+  document.getElementById("unit-type").value = "";
   // Update year labels
   updateYearLabels();
   // Update button states
@@ -527,6 +532,8 @@ function getOfficialCategory(categories) {
 
 /**
  * Evaluate audit obligation based on unit type and thresholds
+ * Povinnost auditu vzniká, když jsou kritéria splněna ve dvou po sobě jdoucích letech
+ * a trvá i následující rok, i když už kritéria nesplňuje
  */
 function evaluateAuditObligation(data) {
   // Limity pro audit
@@ -534,8 +541,9 @@ function evaluateAuditObligation(data) {
   const auditLimitsNew = { aktiva: 120000000, obrat: 240000000, zamestnanci: 50 };
   // Typy jednotek, které stačí splnit 1 kritérium
   const oneCriteriaTypes = ["Akciová společnost", "Svěřenský fond"];
-  // Pro každý rok
-  const results = {};
+  
+  // Krok 1: Zjisti pro každý rok, zda SPLŇUJE KRITÉRIA (ne ještě povinnost)
+  const meetsCriteria = {};
   ["y3", "y2", "y1", "y0"].forEach((key) => {
     const year = data.years[key];
     // Vyber správné limity
@@ -545,14 +553,48 @@ function evaluateAuditObligation(data) {
     if (data.aktiva[key] >= limits.aktiva) count++;
     if (data.obrat[key] >= limits.obrat) count++;
     if (data.zamestnanci[key] >= limits.zamestnanci) count++;
-    // Podle typu jednotky
+    // Podle typu jednotky určíme, zda splňuje kritéria
     if (oneCriteriaTypes.includes(data.unitType)) {
-      results[key] = count >= 1 ? "ANO" : "NE";
+      meetsCriteria[key] = count >= 1;
     } else {
-      results[key] = count >= 2 ? "ANO" : "NE";
+      meetsCriteria[key] = count >= 2;
     }
   });
-  return results;
+  
+  // Krok 2: Určit skutečnou povinnost auditu pro každý rok
+  const auditObligation = {};
+  const years = ["y3", "y2", "y1", "y0"];
+  
+  years.forEach((key, index) => {
+    if (index === 0) {
+      // První rok (y3) - povinnost má pouze pokud splňuje kritéria
+      // (nemáme předchozí rok, takže nemůže být "přenesená" povinnost)
+      auditObligation[key] = meetsCriteria[key] ? "ANO" : "NE";
+    } else {
+      const prevKey = years[index - 1];
+      
+      // Povinnost auditu vzniká nebo trvá, pokud:
+      // 1. Splňuje kritéria tento rok A předchozí rok (povinnost vzniká), NEBO
+      // 2. Předchozí rok měl povinnost A alespoň jeden z těchto dvou let splňuje kritéria (povinnost trvá)
+      
+      const hadObligationLastYear = auditObligation[prevKey] === "ANO";
+      const meetsThisYear = meetsCriteria[key];
+      const metLastYear = meetsCriteria[prevKey];
+      
+      if (meetsThisYear && metLastYear) {
+        // Dva roky po sobě splňují → povinnost vzniká/trvá
+        auditObligation[key] = "ANO";
+      } else if (hadObligationLastYear && (meetsThisYear || metLastYear)) {
+        // Minulý rok měl povinnost a alespoň jeden rok splňuje kritéria → povinnost trvá
+        auditObligation[key] = "ANO";
+      } else {
+        // Jinak nemá povinnost
+        auditObligation[key] = "NE";
+      }
+    }
+  });
+  
+  return auditObligation;
 }
 
 /**
@@ -593,11 +635,16 @@ function displayResults(results) {
       <span class="result-label ml-12">Audit:</span>
       <span class="result-value">${auditObligation.y0}</span>
     </div>
-    <div class="result-item result-official">
+        <div class="result-item result-official">
       <span class="result-label">Pro kontrolovaný rok účetní jednotka je vnímána za:</span>
       <span class="result-value result-success">${getOfficialCategory(results.categories)}</span>
     </div>
+    <div class="result-item result-official">
+      <span class="result-label">Pro kontrolovaný rok účetní jednotka je povinna k auditu?:</span>
+      <span class="result-value result-success">${auditObligation.y0}</span>
+    </div>
   `;
+  
   document.getElementById("results-content").innerHTML = html;
   document.getElementById("results-section").classList.remove("hidden");
   document.getElementById("print-section").classList.remove("hidden");
@@ -705,21 +752,23 @@ async function printParameters() {
         [`Rok ${data.years.y1}:`, data.zdroje.y1 || 'N/A', "", "", ""],
         [`Rok ${data.years.y0}:`, data.zdroje.y0 || 'N/A', "", "", ""],
         ["", "", "", "", ""],
-        ["VYHODNOCENÍ (kategorie dle roku)", "", "", "", ""],
-        ["Rok " + data.years.y3 + ":", evaluationResults.categories.y3 || '—', "", "", ""],
-        ["Rok " + data.years.y2 + ":", evaluationResults.categories.y2 || '—', "", "", ""],
-        ["Rok " + data.years.y1 + ":", evaluationResults.categories.y1 || '—', "", "", ""],
-        ["Rok " + data.years.y0 + ":", evaluationResults.categories.y0 || '—', "", "", ""],
-        ["", "", "", "", ""],
-        ["Povinnost auditu:", auditObligation.y3, auditObligation.y2, auditObligation.y1, auditObligation.y0],
+        ["VYHODNOCENÍ (kategorie dle roku)", "Velikost účetní jednotky", "Povinnost auditu:", "", ""],
+        ["Rok " + data.years.y3 + ":", evaluationResults.categories.y3 || '—', auditObligation.y3, "", ""],
+        ["Rok " + data.years.y2 + ":", evaluationResults.categories.y2 || '—', auditObligation.y2, "", ""],
+        ["Rok " + data.years.y1 + ":", evaluationResults.categories.y1 || '—', auditObligation.y1, "", ""],
+        ["Rok " + data.years.y0 + ":", evaluationResults.categories.y0 || '—', auditObligation.y0, "", ""],
         ["", "", "", "", ""],
         ["Datum vytvoření:", new Date().toLocaleString("cs-CZ"), "", "", ""]
       ];
-      // Insert official category row
-      parameters.splice(22, 0, ["Pro kontrolovaný rok účetní jednotka je vnímána za:", getOfficialCategory(evaluationResults.categories), "", "", ""]);
+      // Determine official audit obligation for the controlled year
+      const officialAudit = auditObligation.y0; // Current year audit obligation
+      
+      // Insert official category and audit rows
+      parameters.push(["", "", "", "", ""]);
+      parameters.push(["Pro kontrolovaný rok účetní jednotka je vnímána za:", getOfficialCategory(evaluationResults.categories), officialAudit, "", ""]);
       // Add unit info rows
       parameters.unshift(["", "", "", "", ""]);
-      parameters.unshift(["KONTROLovaná ÚČETNÍ JEDNOTKA", "", "", "", ""]);
+      parameters.unshift(["KONTROLOVANÁ ÚČETNÍ JEDNOTKA", "", "", "", ""]);
       parameters.unshift(["Typ:", data.unitType, "", "", ""]);
       parameters.unshift(["IČO:", data.unitICO, "", "", ""]);
       parameters.unshift(["Název:", data.unitName, "", "", ""]);
@@ -729,41 +778,51 @@ async function printParameters() {
       // Insert data
       const range = sheet.getRangeByIndexes(startRow, startCol, parameters.length, 5);
       range.values = parameters;
-      // Format main header (Název:)
-      const mainHeaderRange = sheet.getRangeByIndexes(startRow, startCol, 1, 2);
-      mainHeaderRange.format.font.bold = true;
-      mainHeaderRange.format.font.size = 12;
-      
       // Format section header (KONTROLOVANÁ ÚČETNÍ JEDNOTKA)
-      const unitHeaderRange = sheet.getRangeByIndexes(startRow + 4, startCol, 1, 2);
+      const unitHeaderRange = sheet.getRangeByIndexes(startRow + 3, startCol, 1, 2);
       unitHeaderRange.format.font.bold = true;
       unitHeaderRange.format.fill.color = "#e0e0e0";
       
       // Format section headers (PROVĚRKA KLIENTA, FINANČNÍ ÚDAJE, ZDROJE DAT, VYHODNOCENÍ)
-      const sectionHeaders = [startRow + 6, startRow + 11, startRow + 17, startRow + 23];
-      sectionHeaders.forEach(row => {
-        const sectionRange = sheet.getRangeByIndexes(row, startCol, 1, 2);
-        sectionRange.format.font.bold = true;
-        sectionRange.format.font.size = 14;
-        sectionRange.format.fill.color = "#667eea";
-        sectionRange.format.font.color = "white";
-      });
+      const proverkaHeader = sheet.getRangeByIndexes(startRow + 5, startCol, 1, 5);
+      proverkaHeader.format.font.bold = true;
+      proverkaHeader.format.font.size = 14;
+      proverkaHeader.format.fill.color = "#667eea";
+      proverkaHeader.format.font.color = "white";
+      
+      const financialHeader = sheet.getRangeByIndexes(startRow + 10, startCol, 1, 5);
+      financialHeader.format.font.bold = true;
+      financialHeader.format.font.size = 14;
+      financialHeader.format.fill.color = "#667eea";
+      financialHeader.format.font.color = "white";
+      
+      const zdrojeHeader = sheet.getRangeByIndexes(startRow + 16, startCol, 1, 5);
+      zdrojeHeader.format.font.bold = true;
+      zdrojeHeader.format.font.size = 14;
+      zdrojeHeader.format.fill.color = "#667eea";
+      zdrojeHeader.format.font.color = "white";
+      
+      const vyhodnoceniHeader = sheet.getRangeByIndexes(startRow + 22, startCol, 1, 3);
+      vyhodnoceniHeader.format.font.bold = true;
+      vyhodnoceniHeader.format.font.size = 14;
+      vyhodnoceniHeader.format.fill.color = "#667eea";
+      vyhodnoceniHeader.format.font.color = "white";
       
       // Format data table header (Years row)
-      const tableHeaderRange = sheet.getRangeByIndexes(startRow + 12, startCol, 1, 5);
+      const tableHeaderRange = sheet.getRangeByIndexes(startRow + 11, startCol, 1, 5);
       tableHeaderRange.format.font.bold = true;
       tableHeaderRange.format.fill.color = "#e0e0e0";
       
       // Format Aktiva row (accounting format without decimals)
-      const aktivaRange = sheet.getRangeByIndexes(startRow + 13, startCol + 1, 1, 4);
+      const aktivaRange = sheet.getRangeByIndexes(startRow + 12, startCol + 1, 1, 4);
       aktivaRange.numberFormat = [["#,##0"]];
       
       // Format Obrat row (accounting format without decimals)
-      const obratRange = sheet.getRangeByIndexes(startRow + 14, startCol + 1, 1, 4);
+      const obratRange = sheet.getRangeByIndexes(startRow + 13, startCol + 1, 1, 4);
       obratRange.numberFormat = [["#,##0"]];
       
       // Format Zaměstnanci row (accounting format without decimals)
-      const zamestnanciRange = sheet.getRangeByIndexes(startRow + 15, startCol + 1, 1, 4);
+      const zamestnanciRange = sheet.getRangeByIndexes(startRow + 14, startCol + 1, 1, 4);
       zamestnanciRange.numberFormat = [["#,##0"]];
       // Auto-fit columns
       range.format.autofitColumns();
