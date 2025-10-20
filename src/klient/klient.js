@@ -664,6 +664,8 @@ async function printParameters() {
         ["", "", "", "", ""],
         ["Datum vytvoření:", new Date().toLocaleString("cs-CZ"), "", "", ""]
       ];
+      // Insert official category row
+      parameters.splice(22, 0, ["Pro kontrolovaný rok účetní jednotka je vnímána za:", getOfficialCategory(evaluationResults.categories), "", "", ""]);
       // Use selected cell as starting point
       const startRow = selectedStartCell.rowIndex;
       const startCol = selectedStartCell.columnIndex;
