@@ -307,6 +307,22 @@ body, html {
   justify-content: flex-end;
 }
 
+/* Speciální styl pro červené tlačítko Zrušit v modalu */
+.ms-Button.btn-cancel, button.ms-Button.btn-cancel, input[type="button"].ms-Button.btn-cancel, input[type="submit"].ms-Button.btn-cancel {
+  background-color: #e53935 !important;
+  border-color: #e53935 !important;
+  color: #fff !important;
+  box-shadow: 0 1px 4px rgba(229,57,53,0.10) !important;
+  transition: background 0.2s, box-shadow 0.2s;
+}
+.ms-Button.btn-cancel:hover, button.ms-Button.btn-cancel:hover, input[type="button"].ms-Button.btn-cancel:hover, input[type="submit"].ms-Button.btn-cancel:hover,
+.ms-Button.btn-cancel:focus, button.ms-Button.btn-cancel:focus, input[type="button"].ms-Button.btn-cancel:focus, input[type="submit"].ms-Button.btn-cancel:focus {
+  background-color: #b71c1c !important;
+  border-color: #b71c1c !important;
+  color: #fff !important;
+  box-shadow: 0 4px 16px rgba(229,57,53,0.16) !important;
+}
+
 /* Results */
 .results-content {
   padding: 15px;
