@@ -1,3 +1,33 @@
+/**
+ * Restart the tool - clear all data and reset to initial state
+ */
+function restartTool() {
+  // Clear year data store
+  yearDataStore = {
+    y2: null,
+    y1: null,
+    y0: null
+  };
+  // Clear evaluation results
+  evaluationResults = null;
+  selectedStartCell = null;
+  // Reset accounting period to current year
+  const currentYear = new Date().getFullYear();
+  document.getElementById("accounting-period-start").value = `${currentYear}-01-01`;
+  // Update year labels
+  updateYearLabels();
+  // Update button states
+  updateButtonStates();
+  // Hide data summary
+  document.getElementById("data-summary").classList.add("hidden");
+  // Hide results section
+  document.getElementById("results-section").classList.add("hidden");
+  // Hide print section
+  document.getElementById("print-section").classList.add("hidden");
+  // Hide print preview
+  document.getElementById("print-preview").classList.add("hidden");
+  showNotification("Kontrola byla restartována", "success");
+}
 /* global Office, Excel */
 
 import { showNotification, formatNumber } from '../shared/utils.js';
@@ -29,6 +59,8 @@ function initialize() {
   document.getElementById("btn-back-launcher").onclick = () => {
     window.location.href = 'launcher.html';
   };
+  // Restart button
+  document.getElementById("btn-restart").onclick = restartTool;
   
   // Evaluate button
   document.getElementById("btn-evaluate").onclick = evaluateData;
