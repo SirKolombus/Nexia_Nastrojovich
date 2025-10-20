@@ -498,35 +498,28 @@ function evaluateData() {
  * Get official category for the current year based on the last two years' data
  */
 function getOfficialCategory(categories) {
-  // Nová logika: Kategorie pro kontrolovaný rok je ta, které účetní jednotka dosáhla ve dvou po sobě jdoucích letech z posledních tří let (y2, y1, y0).
-  // Pokud změna nastala pouze v jednom roce, oficiální kategorie se nemění.
-  // Pokud nejsou k dispozici tři roky, použije se poslední dostupná kategorie.
-  const order = [
-    'Mikro účetní jednotka',
-    'Malá účetní jednotka',
-    'Střední účetní jednotka',
-    'Velká účetní jednotka'
-  ];
-  // Získáme kategorie za poslední tři roky (od nejstarší po nejnovější)
-  const keys = ['y2', 'y1', 'y0'];
+  // Zákonná logika: Pro kontrolovaný rok (Y0) se nejprve porovnávají Y2 a Y1.
+  // Pokud jsou stejné, použije se tato kategorie.
+  // Pokud ne, porovnají se Y3 a Y2. Pokud jsou stejné, použije se tato kategorie.
+  // Pokud ani zde není shoda, použije se nejstarší dostupný údaj (Y3, Y2, Y1, Y0).
+  const keys = ['y3', 'y2', 'y1', 'y0'];
   const cats = keys.map(k => categories[k]).filter(Boolean);
-  if (cats.length < 1) return 'Nedostatek dat';
-  if (cats.length < 3) {
-    // Pokud nejsou tři roky, použij poslední dostupnou kategorii
-    return cats[cats.length - 1];
+  if (cats.length === 0) return 'Nedostatek dat';
+  // Nejprve porovnej Y2 a Y1
+  if (categories.y2 && categories.y1 && categories.y2 === categories.y1) {
+    return categories.y1;
   }
-  // Projdeme všechny možné kategorie od nejvyšší po nejnižší
-  for (let i = order.length - 1; i >= 0; i--) {
-    const cat = order[i];
-    // Hledáme dvě po sobě jdoucí shody této kategorie v cats
-    for (let j = 0; j < cats.length - 1; j++) {
-      if (cats[j] === cat && cats[j + 1] === cat) {
-        return cat;
-      }
+  // Pokud ne, porovnej Y3 a Y2
+  if (categories.y3 && categories.y2 && categories.y3 === categories.y2) {
+    return categories.y2;
+  }
+  // Pokud ani zde není shoda, použij nejstarší dostupný údaj
+  for (let i = 0; i < keys.length; i++) {
+    if (categories[keys[i]]) {
+      return categories[keys[i]];
     }
   }
-  // Pokud žádná kategorie nebyla dosažena ve dvou po sobě jdoucích letech, použij kategorii aktuálního roku
-  return categories.y0 || 'Nedostatek dat';
+  return 'Nedostatek dat';
 }
 
 /**
