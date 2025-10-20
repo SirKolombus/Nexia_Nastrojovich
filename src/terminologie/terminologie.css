@@ -390,6 +390,32 @@ ul {
     border-radius: 12px;
 }
 
+/* Zvýraznění tlačítka Zpět na hlavní menu */
+#btn-back-launcher.ms-Button {
+    background-color: #1CB5A6 !important;
+    border-color: #1CB5A6 !important;
+    font-size: 16px !important;
+    padding: 12px 24px !important;
+    width: 100% !important;
+    border-radius: 8px !important;
+    font-weight: 600 !important;
+    box-shadow: 0 2px 8px rgba(28,181,166,0.10) !important;
+    margin: 0 0 16px 0 !important;
+    max-width: 340px;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    display: block !important;
+    color: #fff !important;
+    letter-spacing: 0.01em;
+    transition: background 0.2s, box-shadow 0.2s;
+}
+#btn-back-launcher.ms-Button:hover, #btn-back-launcher.ms-Button:focus {
+    background-color: #0F9688 !important;
+    border-color: #0F9688 !important;
+    box-shadow: 0 4px 16px rgba(28,181,166,0.16) !important;
+    color: #fff !important;
+}
+
 /* Responsive adjustments */
 @media (max-width: 480px) {
     .ms-terminology__header {
@@ -455,4 +481,99 @@ b {
 .ms-Button.ms-Button--hero:focus .ms-Button-label{
   color: #005a9e;
   cursor: pointer;
+}
+
+/* --- MODERN SAMPLER-LIKE STYLES FOR TERMINOLOGIE (COLOUR MATCHED) --- */
+body, html {
+    background: #f7fafc !important;
+}
+
+.ms-terminology__header {
+    padding: 20px 28px !important;
+    border-bottom: none !important;
+    border-radius: 0 0 18px 18px !important;
+    box-shadow: 0 2px 12px rgba(28,181,166,0.10) !important;
+    background: linear-gradient(135deg, #1CB5A6 0%, #0F9688 100%) !important;
+}
+.ms-terminology__header img {
+    margin-right: 18px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+.ms-terminology__header h1 {
+    font-size: 1.5rem;
+    color: #fff;
+    margin: 0;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    text-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.ms-terminology__main {
+    background: #fff !important;
+    border-radius: 12px !important;
+    box-shadow: 0 2px 12px rgba(28,181,166,0.07) !important;
+    margin: 24px auto 0 auto !important;
+    padding: 28px 28px 24px 28px !important;
+    max-width: 820px !important;
+    min-height: 60vh;
+}
+
+.search-container {
+    margin-bottom: 24px !important;
+    display: flex;
+    justify-content: center;
+}
+.ms-SearchBox {
+    border-radius: 8px !important;
+    box-shadow: 0 1px 4px rgba(28,181,166,0.08) !important;
+    background: #f7fafc !important;
+    padding: 4px 8px !important;
+    max-width: 400px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+}
+.ms-SearchBox-field {
+    border-radius: 8px !important;
+    border: 1px solid #e1e1e1 !important;
+    padding: 8px 12px !important;
+    font-size: 1rem !important;
+    background: #fff !important;
+    color: #323130 !important;
+    transition: border 0.2s;
+    width: 100%;
+}
+.ms-SearchBox-field:focus {
+    border: 1.5px solid #1CB5A6 !important;
+    outline: none !important;
+}
+.ms-SearchBox-closeButton {
+    background: none !important;
+    border: none !important;
+    color: #1CB5A6 !important;
+    font-size: 1.2rem !important;
+    cursor: pointer !important;
+    margin-left: 4px !important;
+    border-radius: 50% !important;
+    transition: background 0.2s !important;
+}
+.ms-SearchBox-closeButton:hover {
+    background: #e6f7f4 !important;
+}
+
+.search-results, .terminology-tree {
+    background: #f7fafc !important;
+    border-radius: 10px !important;
+    box-shadow: 0 1px 4px rgba(28,181,166,0.06) !important;
+    padding: 18px 20px 14px 20px !important;
+    margin-bottom: 22px !important;
+}
+.search-results h3, .terminology-tree h3 {
+    margin-top: 0 !important;
+    color: #1CB5A6 !important;
+    font-weight: 600 !important;
+}
+#tree-container, #search-results-list {
+    margin-top: 10px !important;
 }
