@@ -93,9 +93,16 @@
 
             <!-- Step 5: Print Button -->
             <div id="print-section" class="action-section mb-20 hidden">
-                <button id="btn-print" class="ms-Button ms-Button--primary">
-                    <span class="ms-Button-label">Vytisknout parametry</span>
+                <button id="btn-select-cell" class="ms-Button ms-Button--primary">
+                    <span class="ms-Button-label">Vybrat buňku pro tisk</span>
                 </button>
+                
+                <div id="print-preview" class="print-preview hidden mt-12">
+                    <p class="ms-font-s"><strong>Parametry budou propsány do:</strong> <span id="print-range-text" class="text-highlight"></span></p>
+                    <button id="btn-print" class="ms-Button ms-Button--primary mt-8">
+                        <span class="ms-Button-label">Vytisknout parametry</span>
+                    </button>
+                </div>
             </div>
 
             <!-- Back to Menu -->

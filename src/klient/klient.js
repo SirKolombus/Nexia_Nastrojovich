@@ -9,6 +9,7 @@ let yearDataStore = {
   y0: null
 };
 let currentEditingYear = null;
+let selectedStartCell = null; // Store the selected cell for printing
 
 Office.onReady((info) => {
   if (info.host === Office.HostType.Excel) {
@@ -31,6 +32,9 @@ function initialize() {
   
   // Evaluate button
   document.getElementById("btn-evaluate").onclick = evaluateData;
+  
+  // Select cell button
+  document.getElementById("btn-select-cell").onclick = selectCellForPrint;
   
   // Print button
   document.getElementById("btn-print").onclick = printParameters;
@@ -474,11 +478,77 @@ function displayResults(results) {
 }
 
 /**
+ * Select cell for printing parameters
+ */
+async function selectCellForPrint() {
+  if (!evaluationResults) {
+    showNotification("Nejprve vyhodnoťte údaje", "warning");
+    return;
+  }
+  
+  try {
+    await Excel.run(async (context) => {
+      const range = context.workbook.getSelectedRange();
+      range.load("address, rowIndex, columnIndex");
+      await context.sync();
+      
+      selectedStartCell = {
+        address: range.address,
+        rowIndex: range.rowIndex,
+        columnIndex: range.columnIndex
+      };
+      
+      // Calculate end range (parameters array length = 23 rows, 4 columns)
+      const parametersRowCount = 23;  // This matches the actual parameters array in printParameters
+      const parametersColumnCount = 4;
+      
+      const endRowIndex = selectedStartCell.rowIndex + parametersRowCount - 1;
+      const endColumnIndex = selectedStartCell.columnIndex + parametersColumnCount - 1;
+      
+      // Convert column index to letter
+      const startCol = getColumnLetter(selectedStartCell.columnIndex);
+      const endCol = getColumnLetter(endColumnIndex);
+      
+      const rangeText = `${startCol}${selectedStartCell.rowIndex + 1}:${endCol}${endRowIndex + 1}`;
+      
+      // Show preview
+      document.getElementById("print-range-text").textContent = rangeText;
+      document.getElementById("print-preview").classList.remove("hidden");
+      
+      showNotification("Buňka vybrána: " + selectedStartCell.address, "success");
+    });
+  } catch (error) {
+    console.error("Error selecting cell:", error);
+    showNotification("Chyba při výběru buňky: " + error.message, "error");
+  }
+}
+
+/**
+ * Convert column index to Excel column letter
+ */
+function getColumnLetter(columnIndex) {
+  let letter = '';
+  let index = columnIndex;
+  
+  while (index >= 0) {
+    letter = String.fromCharCode(65 + (index % 26)) + letter;
+    index = Math.floor(index / 26) - 1;
+  }
+  
+  return letter;
+}
+
+/**
  * Print parameters to Excel
  */
 async function printParameters() {
   if (!evaluationResults) {
     showNotification("Nejprve vyhodnoťte údaje", "warning");
+    return;
+  }
+  
+  if (!selectedStartCell) {
+    showNotification("Nejprve vyberte buňku pro tisk", "warning");
     return;
   }
   
@@ -514,19 +584,16 @@ async function printParameters() {
         ["Datum vytvoření:", new Date().toLocaleString("cs-CZ"), "", ""]
       ];
       
-      // Find a good place to insert (first empty row)
-      const usedRange = sheet.getUsedRange();
-      usedRange.load("rowCount");
-      await context.sync();
-      
-      const startRow = usedRange.rowCount + 2;
+      // Use selected cell as starting point
+      const startRow = selectedStartCell.rowIndex;
+      const startCol = selectedStartCell.columnIndex;
       
       // Insert data
-      const range = sheet.getRangeByIndexes(startRow, 0, parameters.length, 4);
+      const range = sheet.getRangeByIndexes(startRow, startCol, parameters.length, 4);
       range.values = parameters;
       
       // Format header
-      const headerRange = sheet.getRangeByIndexes(startRow, 0, 1, 2);
+      const headerRange = sheet.getRangeByIndexes(startRow, startCol, 1, 2);
       headerRange.format.font.bold = true;
       headerRange.format.font.size = 14;
       headerRange.format.fill.color = "#667eea";
@@ -535,15 +602,27 @@ async function printParameters() {
       // Format section headers
       const sectionHeaders = [startRow + 5, startRow + 11, startRow + 16];
       sectionHeaders.forEach(row => {
-        const sectionRange = sheet.getRangeByIndexes(row, 0, 1, 1);
+        const sectionRange = sheet.getRangeByIndexes(row, startCol, 1, 1);
         sectionRange.format.font.bold = true;
         sectionRange.format.fill.color = "#f0f0f0";
       });
       
       // Format data table header
-      const tableHeaderRange = sheet.getRangeByIndexes(startRow + 6, 0, 1, 4);
+      const tableHeaderRange = sheet.getRangeByIndexes(startRow + 6, startCol, 1, 4);
       tableHeaderRange.format.font.bold = true;
       tableHeaderRange.format.fill.color = "#e0e0e0";
+      
+      // Format Aktiva row (accounting format without decimals)
+      const aktivaRange = sheet.getRangeByIndexes(startRow + 7, startCol + 1, 1, 3);
+      aktivaRange.numberFormat = [["#,##0"]];
+      
+      // Format Obrat row (accounting format without decimals)
+      const obratRange = sheet.getRangeByIndexes(startRow + 8, startCol + 1, 1, 3);
+      obratRange.numberFormat = [["#,##0"]];
+      
+      // Format Zaměstnanci row (accounting format without decimals)
+      const zamestnanci = sheet.getRangeByIndexes(startRow + 9, startCol + 1, 1, 3);
+      zamestnanci.numberFormat = [["#,##0"]];
       
       // Auto-fit columns
       range.format.autofitColumns();

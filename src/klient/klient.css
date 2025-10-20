@@ -347,3 +347,19 @@ main {
     display: none;
   }
 }
+
+/* Print Preview */
+.print-preview {
+  background: #f0f7ff;
+  border: 2px solid #667eea;
+  border-radius: 8px;
+  padding: 15px;
+  margin-top: 12px;
+}
+
+.text-highlight {
+  color: #667eea;
+  font-weight: 600;
+  font-family: 'Courier New', monospace;
+  font-size: 14px;
+}
