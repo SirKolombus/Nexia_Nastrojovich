@@ -11,7 +11,7 @@ body {
     flex-direction: column;
     min-height: 100vh;
     padding: 20px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #1CB5A6 0%, #0F9688 100%);
 }
 
 .hidden {
@@ -23,7 +23,7 @@ body {
     text-align: center;
     margin-bottom: 40px;
     padding: 20px;
-    background: rgba(255, 255, 255, 0.95);
+    background: #fff;
     border-radius: 12px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
@@ -34,7 +34,7 @@ body {
 }
 
 .launcher-title {
-    color: #333;
+    color: #1CB5A6;
     margin: 10px 0;
     font-weight: 600;
 }
@@ -49,7 +49,7 @@ body {
     text-align: center;
     margin-bottom: 30px;
     padding: 15px;
-    background: rgba(255, 255, 255, 0.9);
+    background: #fff;
     border-radius: 8px;
 }
 
@@ -73,8 +73,8 @@ body {
     width: 100%;
     min-height: 120px;
     padding: 20px;
-    background: rgba(255, 255, 255, 0.95);
-    border: 2px solid transparent;
+    background: #fff;
+    border: 1.5px solid #e1e1e1;
     border-radius: 12px;
     cursor: pointer;
     transition: all 0.3s ease;
@@ -84,7 +84,7 @@ body {
 .tool-button:hover {
     transform: translateY(-4px);
     box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
-    border-color: #667eea;
+    border-color: #1CB5A6;
     background: #fff;
 }
 
@@ -117,7 +117,7 @@ body {
 .tool-title {
     font-size: 18px;
     font-weight: 600;
-    color: #333;
+    color: #1CB5A6;
 }
 
 .tool-description {
@@ -131,7 +131,7 @@ body {
     margin-top: auto;
     text-align: center;
     padding: 20px;
-    background: rgba(255, 255, 255, 0.85);
+    background: #f7fafc;
     border-radius: 8px;
 }
 
