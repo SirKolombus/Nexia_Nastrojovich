@@ -35,13 +35,17 @@ function initialize() {
   // Print button
   document.getElementById("btn-print").onclick = printParameters;
   
-  // Update year labels when year changes
-  document.getElementById("reporting-year").addEventListener('input', updateYearLabels);
-  
-  // Set current year as default
-  const currentYear = new Date().getFullYear();
-  document.getElementById("reporting-year").value = currentYear;
-  updateYearLabels();
+  // Update year labels when period start changes
+  const periodInput = document.getElementById("accounting-period-start");
+  if (periodInput) {
+    periodInput.addEventListener('change', updateYearLabels);
+    // Set default to current year 1.1.
+    const currentYear = new Date().getFullYear();
+    if (!periodInput.value) {
+      periodInput.value = `${currentYear}-01-01`;
+    }
+    updateYearLabels();
+  }
   
   // Year button handlers
   document.getElementById("btn-year-2").onclick = () => openYearModal('y2');
@@ -59,20 +63,78 @@ function initialize() {
       closeYearModal();
     }
   };
+  
+  // Add automatic number formatting to numeric fields
+  setupNumberFormatting();
 }
 
 /**
- * Update year labels in the year buttons
+ * Setup automatic number formatting for numeric input fields
+ */
+function setupNumberFormatting() {
+  const numericFields = document.querySelectorAll('.formatted-number');
+  
+  numericFields.forEach(field => {
+    field.addEventListener('input', function(e) {
+      let value = e.target.value.replace(/\s/g, ''); // Remove spaces
+      
+      // Only allow digits
+      value = value.replace(/\D/g, '');
+      
+      // Format with thousand separators
+      if (value) {
+        e.target.value = formatNumberWithSpaces(parseInt(value));
+      } else {
+        e.target.value = '';
+      }
+    });
+    
+    field.addEventListener('blur', function(e) {
+      // Reformat on blur to ensure consistency
+      let value = e.target.value.replace(/\s/g, '');
+      if (value && !isNaN(value)) {
+        e.target.value = formatNumberWithSpaces(parseInt(value));
+      }
+    });
+  });
+}
+
+/**
+ * Format number with spaces as thousand separators (Czech format)
+ */
+function formatNumberWithSpaces(num) {
+  return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+}
+
+/**
+ * Format ISO date (yyyy-mm-dd) to Czech format d.m.yyyy
+ */
+function formatDateCz(iso) {
+  if (!iso) return '';
+  const [y, m, d] = iso.split('-').map(v => parseInt(v, 10));
+  if (!y || !m || !d) return iso;
+  return `${d}.${m}.${y}`;
+}
+
+/**
+ * Update year labels in the year buttons based on accounting period start
  */
 function updateYearLabels() {
-  const yearInput = document.getElementById("reporting-year");
-  const year = parseInt(yearInput.value) || new Date().getFullYear();
+  const periodInput = document.getElementById("accounting-period-start");
+  if (!periodInput || !periodInput.value) return;
   
-  document.getElementById("year-label-2").textContent = `${year - 2}`;
-  document.getElementById("year-label-1").textContent = `${year - 1}`;
-  document.getElementById("year-label-0").textContent = `${year}`;
+  const [year, month, day] = periodInput.value.split('-').map(v => parseInt(v, 10));
+  if (!year) return;
   
-  // Clear stored data when year changes
+  // Check if period starts on 1.1 (calendar year)
+  const isCalendarYear = (month === 1 && day === 1);
+  const prefix = isCalendarYear ? 'Rok ' : 'FY';
+  
+  document.getElementById("year-label-2").textContent = `${prefix}${year - 2}`;
+  document.getElementById("year-label-1").textContent = `${prefix}${year - 1}`;
+  document.getElementById("year-label-0").textContent = `${prefix}${year}`;
+  
+  // Clear stored data when period changes
   yearDataStore = { y2: null, y1: null, y0: null };
   updateButtonStates();
   updateDataSummary();
@@ -83,8 +145,13 @@ function updateYearLabels() {
  */
 function openYearModal(yearKey) {
   currentEditingYear = yearKey;
-  const yearInput = document.getElementById("reporting-year");
-  const year = parseInt(yearInput.value) || new Date().getFullYear();
+  const periodInput = document.getElementById("accounting-period-start");
+  if (!periodInput || !periodInput.value) {
+    showNotification("Nejprve vyplňte první den účetního období", "warning");
+    return;
+  }
+  
+  const [year] = periodInput.value.split('-').map(v => parseInt(v, 10));
   
   let yearValue;
   if (yearKey === 'y2') yearValue = year - 2;
@@ -95,10 +162,11 @@ function openYearModal(yearKey) {
   
   // Load existing data if available
   if (yearDataStore[yearKey]) {
-    document.getElementById("modal-aktiva").value = yearDataStore[yearKey].aktiva || '';
-    document.getElementById("modal-obrat").value = yearDataStore[yearKey].obrat || '';
-    document.getElementById("modal-zamestnanci").value = yearDataStore[yearKey].zamestnanci || '';
-    document.getElementById("modal-zdroj").value = yearDataStore[yearKey].zdroj || '';
+    const data = yearDataStore[yearKey];
+    document.getElementById("modal-aktiva").value = data.aktiva ? formatNumberWithSpaces(data.aktiva) : '';
+    document.getElementById("modal-obrat").value = data.obrat ? formatNumberWithSpaces(data.obrat) : '';
+    document.getElementById("modal-zamestnanci").value = data.zamestnanci ? formatNumberWithSpaces(data.zamestnanci) : '';
+    document.getElementById("modal-zdroj").value = data.zdroj || '';
   } else {
     // Clear fields
     document.getElementById("modal-aktiva").value = '';
@@ -124,9 +192,14 @@ function closeYearModal() {
 function saveYearData() {
   if (!currentEditingYear) return;
   
-  const aktiva = parseFloat(document.getElementById("modal-aktiva").value) || 0;
-  const obrat = parseFloat(document.getElementById("modal-obrat").value) || 0;
-  const zamestnanci = parseFloat(document.getElementById("modal-zamestnanci").value) || 0;
+  // Parse formatted numbers (remove spaces)
+  const aktivaStr = document.getElementById("modal-aktiva").value.replace(/\s/g, '');
+  const obratStr = document.getElementById("modal-obrat").value.replace(/\s/g, '');
+  const zamestnanciStr = document.getElementById("modal-zamestnanci").value.replace(/\s/g, '');
+  
+  const aktiva = parseFloat(aktivaStr) || 0;
+  const obrat = parseFloat(obratStr) || 0;
+  const zamestnanci = parseFloat(zamestnanciStr) || 0;
   const zdroj = document.getElementById("modal-zdroj").value.trim();
   
   if (aktiva === 0 && obrat === 0 && zamestnanci === 0) {
@@ -175,8 +248,10 @@ function updateButtonStates() {
  * Update data summary display
  */
 function updateDataSummary() {
-  const yearInput = document.getElementById("reporting-year");
-  const year = parseInt(yearInput.value) || new Date().getFullYear();
+  const periodInput = document.getElementById("accounting-period-start");
+  if (!periodInput || !periodInput.value) return;
+  
+  const [year] = periodInput.value.split('-').map(v => parseInt(v, 10));
   
   const hasData = yearDataStore.y2 || yearDataStore.y1 || yearDataStore.y0;
   
@@ -198,8 +273,8 @@ function updateDataSummary() {
         <div class="summary-item">
           <div class="summary-year">Rok ${yearNum}:</div>
           <div class="summary-values">
-            Aktiva: ${formatNumber(data.aktiva, 0)} tis. Kč | 
-            Obrat: ${formatNumber(data.obrat, 0)} tis. Kč | 
+            Aktiva: ${formatNumber(data.aktiva, 0)} Kč | 
+            Obrat: ${formatNumber(data.obrat, 0)} Kč | 
             Zaměstnanci: ${formatNumber(data.zamestnanci, 0)}<br>
             <small><em>Zdroj: ${data.zdroj}</em></small>
           </div>
@@ -216,12 +291,15 @@ function updateDataSummary() {
  * Get form values
  */
 function getFormValues() {
-  const month = document.getElementById("reporting-month").value;
-  const year = parseInt(document.getElementById("reporting-year").value);
+  const accountingPeriodStart = document.getElementById("accounting-period-start").value;
+  
+  let year = new Date().getFullYear();
+  if (accountingPeriodStart) {
+    [year] = accountingPeriodStart.split('-').map(v => parseInt(v, 10));
+  }
   
   const data = {
-    month: parseInt(month),
-    year: year,
+    accountingPeriodStart: accountingPeriodStart,
     years: {
       y2: year - 2,
       y1: year - 1,
@@ -256,13 +334,8 @@ function getFormValues() {
  * Validate form data
  */
 function validateData(data) {
-  if (!data.month || data.month < 1 || data.month > 12) {
-    showNotification("Prosím vyberte měsíc", "error");
-    return false;
-  }
-  
-  if (!data.year || data.year < 2000 || data.year > 2099) {
-    showNotification("Prosím zadejte platný rok", "error");
+  if (!data.accountingPeriodStart) {
+    showNotification("Prosím vyplňte první den účetního období", "error");
     return false;
   }
   
@@ -287,71 +360,77 @@ function evaluateData() {
     return;
   }
   
-  // Calculate averages for the two preceding years
-  const avgAktiva = (data.aktiva.y1 + data.aktiva.y2) / 2;
-  const avgObrat = (data.obrat.y1 + data.obrat.y2) / 2;
-  const avgZamestnanci = (data.zamestnanci.y1 + data.zamestnanci.y2) / 2;
-  
   // Thresholds according to Czech Accounting Act (Zákon o účetnictví)
-  // Micro entity (mikro účetní jednotka)
-  const microThresholds = {
-    aktiva: 9000, // 9 mil. Kč
-    obrat: 18000, // 18 mil. Kč
-    zamestnanci: 10
+  // Two versions: before 31.12.2023 and from 1.1.2024
+  
+  const oldThresholds = {
+    micro: { aktiva: 9000, obrat: 18000, zamestnanci: 10 },
+    small: { aktiva: 100000, obrat: 200000, zamestnanci: 50 },
+    medium: { aktiva: 500000, obrat: 1000000, zamestnanci: 250 }
   };
   
-  // Small entity (malá účetní jednotka)
-  const smallThresholds = {
-    aktiva: 100000, // 100 mil. Kč
-    obrat: 200000, // 200 mil. Kč
-    zamestnanci: 50
+  const newThresholds = {
+    micro: { aktiva: 11000, obrat: 22000, zamestnanci: 10 },
+    small: { aktiva: 120000, obrat: 240000, zamestnanci: 50 },
+    medium: { aktiva: 600000, obrat: 1200000, zamestnanci: 250 }
   };
   
-  // Medium entity (střední účetní jednotka)
-  const mediumThresholds = {
-    aktiva: 500000, // 500 mil. Kč
-    obrat: 1000000, // 1 mld. Kč
-    zamestnanci: 250
-  };
-  
-  // Evaluate size category (need to exceed 2 out of 3 criteria for two consecutive years)
-  let category = "Velká účetní jednotka";
-  let exceededCriteria = 0;
-  
-  // Check micro entity
-  if (avgAktiva <= microThresholds.aktiva) exceededCriteria++;
-  if (avgObrat <= microThresholds.obrat) exceededCriteria++;
-  if (avgZamestnanci <= microThresholds.zamestnanci) exceededCriteria++;
-  
-  if (exceededCriteria >= 2) {
-    category = "Mikro účetní jednotka";
-  } else {
-    // Check small entity
-    exceededCriteria = 0;
-    if (avgAktiva <= smallThresholds.aktiva) exceededCriteria++;
-    if (avgObrat <= smallThresholds.obrat) exceededCriteria++;
-    if (avgZamestnanci <= smallThresholds.zamestnanci) exceededCriteria++;
+  // Helper to classify one year's values into a category
+  function classifyOne(aktiva, obrat, zam, year) {
+    if (aktiva == null && obrat == null && zam == null) return null;
     
-    if (exceededCriteria >= 2) {
-      category = "Malá účetní jednotka";
-    } else {
-      // Check medium entity
-      exceededCriteria = 0;
-      if (avgAktiva <= mediumThresholds.aktiva) exceededCriteria++;
-      if (avgObrat <= mediumThresholds.obrat) exceededCriteria++;
-      if (avgZamestnanci <= mediumThresholds.zamestnanci) exceededCriteria++;
-      
-      if (exceededCriteria >= 2) {
-        category = "Střední účetní jednotka";
-      }
-    }
+    // Select thresholds based on the year being evaluated
+    const thresholds = (year >= 2024) ? newThresholds : oldThresholds;
+    
+    // Inputs are in Kč; thresholds are in tis. Kč → convert
+    const aktTis = typeof aktiva === 'number' ? aktiva / 1000 : 0;
+    const obrTis = typeof obrat === 'number' ? obrat / 1000 : 0;
+    const zamVal = typeof zam === 'number' ? zam : 0;
+    
+    let exceeds; // count of criteria that EXCEED the threshold
+    
+    // Check if exceeds Micro thresholds (if exceeds < 2, it's Micro)
+    exceeds = 0;
+    if (aktTis > thresholds.micro.aktiva) exceeds++;
+    if (obrTis > thresholds.micro.obrat) exceeds++;
+    if (zamVal > thresholds.micro.zamestnanci) exceeds++;
+    if (exceeds < 2) return "Mikro účetní jednotka";
+    
+    // Check if exceeds Small thresholds
+    exceeds = 0;
+    if (aktTis > thresholds.small.aktiva) exceeds++;
+    if (obrTis > thresholds.small.obrat) exceeds++;
+    if (zamVal > thresholds.small.zamestnanci) exceeds++;
+    if (exceeds < 2) return "Malá účetní jednotka";
+    
+    // Check if exceeds Medium thresholds
+    exceeds = 0;
+    if (aktTis > thresholds.medium.aktiva) exceeds++;
+    if (obrTis > thresholds.medium.obrat) exceeds++;
+    if (zamVal > thresholds.medium.zamestnanci) exceeds++;
+    if (exceeds < 2) return "Střední účetní jednotka";
+    
+    // Else large
+    return "Velká účetní jednotka";
   }
+  
+  const categories = {
+    y2: yearDataStore.y2 ? classifyOne(data.aktiva.y2, data.obrat.y2, data.zamestnanci.y2, data.years.y2) : null,
+    y1: yearDataStore.y1 ? classifyOne(data.aktiva.y1, data.obrat.y1, data.zamestnanci.y1, data.years.y1) : null,
+    y0: yearDataStore.y0 ? classifyOne(data.aktiva.y0, data.obrat.y0, data.zamestnanci.y0, data.years.y0) : null,
+  };
+  
+  // Determine which thresholds to display (based on first day of accounting period)
+  const periodStart = new Date(data.accountingPeriodStart);
+  const thresholdChangeDate = new Date('2024-01-01');
+  const useOldThresholds = periodStart < thresholdChangeDate;
   
   // Store results
   evaluationResults = {
     data: data,
-    averages: { aktiva: avgAktiva, obrat: avgObrat, zamestnanci: avgZamestnanci },
-    category: category
+    categories: categories,
+    thresholdVersion: useOldThresholds ? 'do 31.12.2023' : 'od 1.1.2024',
+    thresholds: useOldThresholds ? oldThresholds : newThresholds
   };
   
   // Display results
@@ -364,33 +443,28 @@ function evaluateData() {
  * Display evaluation results
  */
 function displayResults(results) {
-  const monthNames = ["", "Leden", "Únor", "Březen", "Duben", "Květen", "Červen", 
-                      "Červenec", "Srpen", "Září", "Říjen", "Listopad", "Prosinec"];
-  
   const html = `
     <div class="result-item">
-      <span class="result-label">Rozhodný den:</span>
-      <span class="result-value">${monthNames[results.data.month]} ${results.data.year}</span>
+      <span class="result-label">První den účetního období:</span>
+      <span class="result-value">${formatDateCz(results.data.accountingPeriodStart)}</span>
     </div>
     
     <div class="result-item">
-      <span class="result-label">Průměrná aktiva (${results.data.years.y2}-${results.data.years.y1}):</span>
-      <span class="result-value">${formatNumber(results.averages.aktiva, 0)} tis. Kč</span>
+      <span class="result-label">Použité limity:</span>
+      <span class="result-value">${results.thresholdVersion}</span>
     </div>
     
     <div class="result-item">
-      <span class="result-label">Průměrný obrat (${results.data.years.y2}-${results.data.years.y1}):</span>
-      <span class="result-value">${formatNumber(results.averages.obrat, 0)} tis. Kč</span>
+      <span class="result-label">Rok ${results.data.years.y2}:</span>
+      <span class="result-value result-success">${results.categories.y2 ?? '—'}</span>
     </div>
-    
     <div class="result-item">
-      <span class="result-label">Průměrný počet zaměstnanců (${results.data.years.y2}-${results.data.years.y1}):</span>
-      <span class="result-value">${formatNumber(results.averages.zamestnanci, 1)}</span>
+      <span class="result-label">Rok ${results.data.years.y1}:</span>
+      <span class="result-value result-success">${results.categories.y1 ?? '—'}</span>
     </div>
-    
     <div class="result-item">
-      <span class="result-label">Kategorie:</span>
-      <span class="result-value result-success">${results.category}</span>
+      <span class="result-label">Rok ${results.data.years.y0}:</span>
+      <span class="result-value result-success">${results.categories.y0 ?? '—'}</span>
     </div>
   `;
   
@@ -412,22 +486,19 @@ async function printParameters() {
     await Excel.run(async (context) => {
       const sheet = context.workbook.worksheets.getActiveWorksheet();
       
-      const monthNames = ["", "Leden", "Únor", "Březen", "Duben", "Květen", "Červen", 
-                          "Červenec", "Srpen", "Září", "Říjen", "Listopad", "Prosinec"];
-      
       const data = evaluationResults.data;
-      const avg = evaluationResults.averages;
       
       // Prepare data for printing
       const parameters = [
         ["PROVĚRKA KLIENTA - PARAMETRY", "", "", ""],
         ["", "", "", ""],
-        ["Rozhodný den:", `${monthNames[data.month]} ${data.year}`, "", ""],
+        ["První den účetního období:", formatDateCz(data.accountingPeriodStart), "", ""],
+        ["Použité limity:", evaluationResults.thresholdVersion, "", ""],
         ["", "", "", ""],
         ["FINANČNÍ ÚDAJE", "", "", ""],
         ["", data.years.y2, data.years.y1, data.years.y0],
-        ["Aktiva (tis. Kč)", data.aktiva.y2, data.aktiva.y1, data.aktiva.y0],
-        ["Obrat (tis. Kč)", data.obrat.y2, data.obrat.y1, data.obrat.y0],
+        ["Aktiva (Kč)", data.aktiva.y2, data.aktiva.y1, data.aktiva.y0],
+        ["Obrat (Kč)", data.obrat.y2, data.obrat.y1, data.obrat.y0],
         ["Průměrný počet zaměstnanců", data.zamestnanci.y2, data.zamestnanci.y1, data.zamestnanci.y0],
         ["", "", "", ""],
         ["ZDROJE DAT", "", "", ""],
@@ -435,12 +506,10 @@ async function printParameters() {
         [`Rok ${data.years.y1}:`, data.zdroje.y1 || 'N/A', "", ""],
         [`Rok ${data.years.y0}:`, data.zdroje.y0 || 'N/A', "", ""],
         ["", "", "", ""],
-        ["VYHODNOCENÍ", "", "", ""],
-        ["Průměrná aktiva:", formatNumber(avg.aktiva, 0) + " tis. Kč", "", ""],
-        ["Průměrný obrat:", formatNumber(avg.obrat, 0) + " tis. Kč", "", ""],
-        ["Průměrný počet zaměstnanců:", formatNumber(avg.zamestnanci, 1), "", ""],
-        ["", "", "", ""],
-        ["Kategorie:", evaluationResults.category, "", ""],
+        ["VYHODNOCENÍ (kategorie dle roku)", "", "", ""],
+        ["Rok " + data.years.y2 + ":", evaluationResults.categories.y2 || '—', "", ""],
+        ["Rok " + data.years.y1 + ":", evaluationResults.categories.y1 || '—', "", ""],
+        ["Rok " + data.years.y0 + ":", evaluationResults.categories.y0 || '—', "", ""],
         ["", "", "", ""],
         ["Datum vytvoření:", new Date().toLocaleString("cs-CZ"), "", ""]
       ];
@@ -464,7 +533,7 @@ async function printParameters() {
       headerRange.format.font.color = "white";
       
       // Format section headers
-      const sectionHeaders = [startRow + 4, startRow + 10];
+      const sectionHeaders = [startRow + 5, startRow + 11, startRow + 16];
       sectionHeaders.forEach(row => {
         const sectionRange = sheet.getRangeByIndexes(row, 0, 1, 1);
         sectionRange.format.font.bold = true;
@@ -472,7 +541,7 @@ async function printParameters() {
       });
       
       // Format data table header
-      const tableHeaderRange = sheet.getRangeByIndexes(startRow + 5, 0, 1, 4);
+      const tableHeaderRange = sheet.getRangeByIndexes(startRow + 6, 0, 1, 4);
       tableHeaderRange.format.font.bold = true;
       tableHeaderRange.format.fill.color = "#e0e0e0";
       

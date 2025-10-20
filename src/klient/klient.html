@@ -32,29 +32,13 @@
         <div class="content-container">
             <!-- Step 1: Reporting Date Selection -->
             <div class="section-box mb-20">
-                <h3 class="ms-font-l section-title">1. Rozhodný den</h3>
+                <h3 class="ms-font-l section-title">1. Účetní období</h3>
+                
                 <div class="form-row">
                     <div class="form-field">
-                        <label class="ms-Label">Měsíc:</label>
-                        <select id="reporting-month" class="ms-Dropdown">
-                            <option value="">-Vyberte-</option>
-                            <option value="1">Leden</option>
-                            <option value="2">Únor</option>
-                            <option value="3">Březen</option>
-                            <option value="4">Duben</option>
-                            <option value="5">Květen</option>
-                            <option value="6">Červen</option>
-                            <option value="7">Červenec</option>
-                            <option value="8">Srpen</option>
-                            <option value="9">Září</option>
-                            <option value="10">Říjen</option>
-                            <option value="11">Listopad</option>
-                            <option value="12">Prosinec</option>
-                        </select>
-                    </div>
-                    <div class="form-field">
-                        <label class="ms-Label">Rok:</label>
-                        <input type="number" id="reporting-year" class="ms-TextField-field" placeholder="např. 2025" min="2000" max="2099" />
+                        <label class="ms-Label">První den účetního období:</label>
+                        <input type="date" id="accounting-period-start" class="ms-TextField-field" title="První den účetního období" />
+                        <small class="ms-font-xs text-muted">Rozhoduje o výběru limitů (do 31.12.2023 vs. od 1.1.2024)</small>
                     </div>
                 </div>
             </div>
@@ -136,18 +120,18 @@
             </div>
             <div class="modal-body">
                 <div class="modal-field">
-                    <label class="ms-Label" for="modal-aktiva">Aktiva (tis. Kč):</label>
-                    <input type="number" id="modal-aktiva" class="ms-TextField-field" placeholder="Zadejte aktiva" />
+                    <label class="ms-Label" for="modal-aktiva">Aktiva:</label>
+                    <input type="text" id="modal-aktiva" class="ms-TextField-field formatted-number" placeholder="Zadejte aktiva" />
                 </div>
                 
                 <div class="modal-field">
-                    <label class="ms-Label" for="modal-obrat">Obrat (tis. Kč):</label>
-                    <input type="number" id="modal-obrat" class="ms-TextField-field" placeholder="Zadejte obrat" />
+                    <label class="ms-Label" for="modal-obrat">Obrat:</label>
+                    <input type="text" id="modal-obrat" class="ms-TextField-field formatted-number" placeholder="Zadejte obrat" />
                 </div>
                 
                 <div class="modal-field">
                     <label class="ms-Label" for="modal-zamestnanci">Průměrný stav zaměstnanců:</label>
-                    <input type="number" id="modal-zamestnanci" class="ms-TextField-field" placeholder="Zadejte počet zaměstnanců" />
+                    <input type="text" id="modal-zamestnanci" class="ms-TextField-field formatted-number" placeholder="Zadejte počet zaměstnanců" />
                 </div>
                 
                 <div class="modal-field">
