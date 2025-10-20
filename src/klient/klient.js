@@ -445,23 +445,23 @@ function evaluateData() {
     
     // Check if exceeds Micro thresholds (if exceeds < 2, it's Micro)
     exceeds = 0;
-    if (aktTis > thresholds.micro.aktiva) exceeds++;
-    if (obrTis > thresholds.micro.obrat) exceeds++;
-    if (zamVal > thresholds.micro.zamestnanci) exceeds++;
+    if (aktTis >= thresholds.micro.aktiva) exceeds++;
+    if (obrTis >= thresholds.micro.obrat) exceeds++;
+    if (zamVal >= thresholds.micro.zamestnanci) exceeds++;
     if (exceeds < 2) return "Mikro účetní jednotka";
     
     // Check if exceeds Small thresholds
     exceeds = 0;
-    if (aktTis > thresholds.small.aktiva) exceeds++;
-    if (obrTis > thresholds.small.obrat) exceeds++;
-    if (zamVal > thresholds.small.zamestnanci) exceeds++;
+    if (aktTis >= thresholds.small.aktiva) exceeds++;
+    if (obrTis >= thresholds.small.obrat) exceeds++;
+    if (zamVal >= thresholds.small.zamestnanci) exceeds++;
     if (exceeds < 2) return "Malá účetní jednotka";
     
     // Check if exceeds Medium thresholds
     exceeds = 0;
-    if (aktTis > thresholds.medium.aktiva) exceeds++;
-    if (obrTis > thresholds.medium.obrat) exceeds++;
-    if (zamVal > thresholds.medium.zamestnanci) exceeds++;
+    if (aktTis >= thresholds.medium.aktiva) exceeds++;
+    if (obrTis >= thresholds.medium.obrat) exceeds++;
+    if (zamVal >= thresholds.medium.zamestnanci) exceeds++;
     if (exceeds < 2) return "Střední účetní jednotka";
     
     // Else large
@@ -532,8 +532,6 @@ function getOfficialCategory(categories) {
 
 /**
  * Evaluate audit obligation based on unit type and thresholds
- * Povinnost auditu vzniká, když jsou kritéria splněna ve dvou po sobě jdoucích letech
- * a trvá i následující rok, i když už kritéria nesplňuje
  */
 function evaluateAuditObligation(data) {
   // Limity pro audit
@@ -541,9 +539,8 @@ function evaluateAuditObligation(data) {
   const auditLimitsNew = { aktiva: 120000000, obrat: 240000000, zamestnanci: 50 };
   // Typy jednotek, které stačí splnit 1 kritérium
   const oneCriteriaTypes = ["Akciová společnost", "Svěřenský fond"];
-  
-  // Krok 1: Zjisti pro každý rok, zda SPLŇUJE KRITÉRIA (ne ještě povinnost)
-  const meetsCriteria = {};
+  // Pro každý rok
+  const results = {};
   ["y3", "y2", "y1", "y0"].forEach((key) => {
     const year = data.years[key];
     // Vyber správné limity
@@ -553,48 +550,14 @@ function evaluateAuditObligation(data) {
     if (data.aktiva[key] >= limits.aktiva) count++;
     if (data.obrat[key] >= limits.obrat) count++;
     if (data.zamestnanci[key] >= limits.zamestnanci) count++;
-    // Podle typu jednotky určíme, zda splňuje kritéria
+    // Podle typu jednotky
     if (oneCriteriaTypes.includes(data.unitType)) {
-      meetsCriteria[key] = count >= 1;
+      results[key] = count >= 1 ? "ANO" : "NE";
     } else {
-      meetsCriteria[key] = count >= 2;
+      results[key] = count >= 2 ? "ANO" : "NE";
     }
   });
-  
-  // Krok 2: Určit skutečnou povinnost auditu pro každý rok
-  const auditObligation = {};
-  const years = ["y3", "y2", "y1", "y0"];
-  
-  years.forEach((key, index) => {
-    if (index === 0) {
-      // První rok (y3) - povinnost má pouze pokud splňuje kritéria
-      // (nemáme předchozí rok, takže nemůže být "přenesená" povinnost)
-      auditObligation[key] = meetsCriteria[key] ? "ANO" : "NE";
-    } else {
-      const prevKey = years[index - 1];
-      
-      // Povinnost auditu vzniká nebo trvá, pokud:
-      // 1. Splňuje kritéria tento rok A předchozí rok (povinnost vzniká), NEBO
-      // 2. Předchozí rok měl povinnost A alespoň jeden z těchto dvou let splňuje kritéria (povinnost trvá)
-      
-      const hadObligationLastYear = auditObligation[prevKey] === "ANO";
-      const meetsThisYear = meetsCriteria[key];
-      const metLastYear = meetsCriteria[prevKey];
-      
-      if (meetsThisYear && metLastYear) {
-        // Dva roky po sobě splňují → povinnost vzniká/trvá
-        auditObligation[key] = "ANO";
-      } else if (hadObligationLastYear && (meetsThisYear || metLastYear)) {
-        // Minulý rok měl povinnost a alespoň jeden rok splňuje kritéria → povinnost trvá
-        auditObligation[key] = "ANO";
-      } else {
-        // Jinak nemá povinnost
-        auditObligation[key] = "NE";
-      }
-    }
-  });
-  
-  return auditObligation;
+  return results;
 }
 
 /**
