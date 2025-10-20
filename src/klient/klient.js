@@ -34,6 +34,7 @@ import { showNotification, formatNumber } from '../shared/utils.js';
 
 let evaluationResults = null;
 let yearDataStore = {
+  y3: null,
   y2: null,
   y1: null,
   y0: null
@@ -84,6 +85,7 @@ function initialize() {
   }
   
   // Year button handlers
+  document.getElementById("btn-year-3").onclick = () => openYearModal('y3');
   document.getElementById("btn-year-2").onclick = () => openYearModal('y2');
   document.getElementById("btn-year-1").onclick = () => openYearModal('y1');
   document.getElementById("btn-year-0").onclick = () => openYearModal('y0');
@@ -166,12 +168,12 @@ function updateYearLabels() {
   const isCalendarYear = (month === 1 && day === 1);
   const prefix = isCalendarYear ? 'Rok ' : 'FY';
   
+  document.getElementById("year-label-3").textContent = `${prefix}${year - 3}`;
   document.getElementById("year-label-2").textContent = `${prefix}${year - 2}`;
   document.getElementById("year-label-1").textContent = `${prefix}${year - 1}`;
   document.getElementById("year-label-0").textContent = `${prefix}${year}`;
-  
   // Clear stored data when period changes
-  yearDataStore = { y2: null, y1: null, y0: null };
+  yearDataStore = { y3: null, y2: null, y1: null, y0: null };
   updateButtonStates();
   updateDataSummary();
 }
@@ -190,7 +192,8 @@ function openYearModal(yearKey) {
   const [year] = periodInput.value.split('-').map(v => parseInt(v, 10));
   
   let yearValue;
-  if (yearKey === 'y2') yearValue = year - 2;
+  if (yearKey === 'y3') yearValue = year - 3;
+  else if (yearKey === 'y2') yearValue = year - 2;
   else if (yearKey === 'y1') yearValue = year - 1;
   else yearValue = year;
   
@@ -266,16 +269,17 @@ function saveYearData() {
  * Update button states based on stored data
  */
 function updateButtonStates() {
-  ['y2', 'y1', 'y0'].forEach((yearKey, index) => {
-    const button = document.getElementById(`btn-year-${2 - index}`);
-    const status = document.getElementById(`year-status-${2 - index}`);
-    
-    if (yearDataStore[yearKey]) {
-      button.classList.add('filled');
-      status.textContent = '✓ Vyplněno';
-    } else {
-      button.classList.remove('filled');
-      status.textContent = 'Nevyplněno';
+  ['y3', 'y2', 'y1', 'y0'].forEach((yearKey, index) => {
+    const button = document.getElementById(`btn-year-${3 - index}`);
+    const status = document.getElementById(`year-status-${3 - index}`);
+    if (button && status) {
+      if (yearDataStore[yearKey]) {
+        button.classList.add('filled');
+        status.textContent = '✓ Vyplněno';
+      } else {
+        button.classList.remove('filled');
+        status.textContent = 'Nevyplněno';
+      }
     }
   });
 }
@@ -289,16 +293,14 @@ function updateDataSummary() {
   
   const [year] = periodInput.value.split('-').map(v => parseInt(v, 10));
   
-  const hasData = yearDataStore.y2 || yearDataStore.y1 || yearDataStore.y0;
-  
+  const hasData = yearDataStore.y3 || yearDataStore.y2 || yearDataStore.y1 || yearDataStore.y0;
   if (!hasData) {
     document.getElementById("data-summary").classList.add("hidden");
     return;
   }
-  
   let summaryHtml = '';
-  
   [
+    { key: 'y3', year: year - 3 },
     { key: 'y2', year: year - 2 },
     { key: 'y1', year: year - 1 },
     { key: 'y0', year: year }
@@ -318,7 +320,6 @@ function updateDataSummary() {
       `;
     }
   });
-  
   document.getElementById("summary-content").innerHTML = summaryHtml;
   document.getElementById("data-summary").classList.remove("hidden");
 }
@@ -337,32 +338,36 @@ function getFormValues() {
   const data = {
     accountingPeriodStart: accountingPeriodStart,
     years: {
+      y3: year - 3,
       y2: year - 2,
       y1: year - 1,
       y0: year
     },
     aktiva: {
+      y3: yearDataStore.y3 ? yearDataStore.y3.aktiva : 0,
       y2: yearDataStore.y2 ? yearDataStore.y2.aktiva : 0,
       y1: yearDataStore.y1 ? yearDataStore.y1.aktiva : 0,
       y0: yearDataStore.y0 ? yearDataStore.y0.aktiva : 0
     },
     obrat: {
+      y3: yearDataStore.y3 ? yearDataStore.y3.obrat : 0,
       y2: yearDataStore.y2 ? yearDataStore.y2.obrat : 0,
       y1: yearDataStore.y1 ? yearDataStore.y1.obrat : 0,
       y0: yearDataStore.y0 ? yearDataStore.y0.obrat : 0
     },
     zamestnanci: {
+      y3: yearDataStore.y3 ? yearDataStore.y3.zamestnanci : 0,
       y2: yearDataStore.y2 ? yearDataStore.y2.zamestnanci : 0,
       y1: yearDataStore.y1 ? yearDataStore.y1.zamestnanci : 0,
       y0: yearDataStore.y0 ? yearDataStore.y0.zamestnanci : 0
     },
     zdroje: {
+      y3: yearDataStore.y3 ? yearDataStore.y3.zdroj : '',
       y2: yearDataStore.y2 ? yearDataStore.y2.zdroj : '',
       y1: yearDataStore.y1 ? yearDataStore.y1.zdroj : '',
       y0: yearDataStore.y0 ? yearDataStore.y0.zdroj : ''
     }
   };
-  
   return data;
 }
 
@@ -376,7 +381,7 @@ function validateData(data) {
   }
   
   // Check if at least some data is filled
-  const hasData = yearDataStore.y2 || yearDataStore.y1 || yearDataStore.y0;
+  const hasData = yearDataStore.y3 || yearDataStore.y2 || yearDataStore.y1 || yearDataStore.y0;
   
   if (!hasData) {
     showNotification("Prosím vyplňte údaje alespoň pro jeden rok", "error");
@@ -451,6 +456,7 @@ function evaluateData() {
   }
   
   const categories = {
+    y3: yearDataStore.y3 ? classifyOne(data.aktiva.y3, data.obrat.y3, data.zamestnanci.y3, data.years.y3) : null,
     y2: yearDataStore.y2 ? classifyOne(data.aktiva.y2, data.obrat.y2, data.zamestnanci.y2, data.years.y2) : null,
     y1: yearDataStore.y1 ? classifyOne(data.aktiva.y1, data.obrat.y1, data.zamestnanci.y1, data.years.y1) : null,
     y0: yearDataStore.y0 ? classifyOne(data.aktiva.y0, data.obrat.y0, data.zamestnanci.y0, data.years.y0) : null,
@@ -484,12 +490,14 @@ function displayResults(results) {
       <span class="result-label">První den účetního období:</span>
       <span class="result-value">${formatDateCz(results.data.accountingPeriodStart)}</span>
     </div>
-    
     <div class="result-item">
       <span class="result-label">Použité limity:</span>
       <span class="result-value">${results.thresholdVersion}</span>
     </div>
-    
+    <div class="result-item">
+      <span class="result-label">Rok ${results.data.years.y3}:</span>
+      <span class="result-value result-success">${results.categories.y3 ?? '—'}</span>
+    </div>
     <div class="result-item">
       <span class="result-label">Rok ${results.data.years.y2}:</span>
       <span class="result-value result-success">${results.categories.y2 ?? '—'}</span>
@@ -530,12 +538,11 @@ async function selectCellForPrint() {
         columnIndex: range.columnIndex
       };
       
-      // Calculate end range (parameters array length = 23 rows, 4 columns)
-      const parametersRowCount = 23;  // This matches the actual parameters array in printParameters
-      const parametersColumnCount = 4;
-      
-      const endRowIndex = selectedStartCell.rowIndex + parametersRowCount - 1;
-      const endColumnIndex = selectedStartCell.columnIndex + parametersColumnCount - 1;
+  // Calculate end range (parameters array length = 25 rows, 5 columns)
+  const parametersRowCount = 25;  // 4 roky + sekce
+  const parametersColumnCount = 5;
+  const endRowIndex = selectedStartCell.rowIndex + parametersRowCount - 1;
+  const endColumnIndex = selectedStartCell.columnIndex + parametersColumnCount - 1;
       
       // Convert column index to letter
       const startCol = getColumnLetter(selectedStartCell.columnIndex);
@@ -592,70 +599,63 @@ async function printParameters() {
       
       // Prepare data for printing
       const parameters = [
-        ["PROVĚRKA KLIENTA - PARAMETRY", "", "", ""],
-        ["", "", "", ""],
-        ["První den účetního období:", formatDateCz(data.accountingPeriodStart), "", ""],
-        ["Použité limity:", evaluationResults.thresholdVersion, "", ""],
-        ["", "", "", ""],
-        ["FINANČNÍ ÚDAJE", "", "", ""],
-        ["", data.years.y2, data.years.y1, data.years.y0],
-        ["Aktiva (Kč)", data.aktiva.y2, data.aktiva.y1, data.aktiva.y0],
-        ["Obrat (Kč)", data.obrat.y2, data.obrat.y1, data.obrat.y0],
-        ["Průměrný počet zaměstnanců", data.zamestnanci.y2, data.zamestnanci.y1, data.zamestnanci.y0],
-        ["", "", "", ""],
-        ["ZDROJE DAT", "", "", ""],
-        [`Rok ${data.years.y2}:`, data.zdroje.y2 || 'N/A', "", ""],
-        [`Rok ${data.years.y1}:`, data.zdroje.y1 || 'N/A', "", ""],
-        [`Rok ${data.years.y0}:`, data.zdroje.y0 || 'N/A', "", ""],
-        ["", "", "", ""],
-        ["VYHODNOCENÍ (kategorie dle roku)", "", "", ""],
-        ["Rok " + data.years.y2 + ":", evaluationResults.categories.y2 || '—', "", ""],
-        ["Rok " + data.years.y1 + ":", evaluationResults.categories.y1 || '—', "", ""],
-        ["Rok " + data.years.y0 + ":", evaluationResults.categories.y0 || '—', "", ""],
-        ["", "", "", ""],
-        ["Datum vytvoření:", new Date().toLocaleString("cs-CZ"), "", ""]
+        ["PROVĚRKA KLIENTA - PARAMETRY", "", "", "", ""],
+        ["", "", "", "", ""],
+        ["První den účetního období:", formatDateCz(data.accountingPeriodStart), "", "", ""],
+        ["Použité limity:", evaluationResults.thresholdVersion, "", "", ""],
+        ["", "", "", "", ""],
+        ["FINANČNÍ ÚDAJE", "", "", "", ""],
+        ["", data.years.y3, data.years.y2, data.years.y1, data.years.y0],
+        ["Aktiva (Kč)", data.aktiva.y3, data.aktiva.y2, data.aktiva.y1, data.aktiva.y0],
+        ["Obrat (Kč)", data.obrat.y3, data.obrat.y2, data.obrat.y1, data.obrat.y0],
+        ["Průměrný počet zaměstnanců", data.zamestnanci.y3, data.zamestnanci.y2, data.zamestnanci.y1, data.zamestnanci.y0],
+        ["", "", "", "", ""],
+        ["ZDROJE DAT", "", "", "", ""],
+        [`Rok ${data.years.y3}:`, data.zdroje.y3 || 'N/A', "", "", ""],
+        [`Rok ${data.years.y2}:`, data.zdroje.y2 || 'N/A', "", "", ""],
+        [`Rok ${data.years.y1}:`, data.zdroje.y1 || 'N/A', "", "", ""],
+        [`Rok ${data.years.y0}:`, data.zdroje.y0 || 'N/A', "", "", ""],
+        ["", "", "", "", ""],
+        ["VYHODNOCENÍ (kategorie dle roku)", "", "", "", ""],
+        ["Rok " + data.years.y3 + ":", evaluationResults.categories.y3 || '—', "", "", ""],
+        ["Rok " + data.years.y2 + ":", evaluationResults.categories.y2 || '—', "", "", ""],
+        ["Rok " + data.years.y1 + ":", evaluationResults.categories.y1 || '—', "", "", ""],
+        ["Rok " + data.years.y0 + ":", evaluationResults.categories.y0 || '—', "", "", ""],
+        ["", "", "", "", ""],
+        ["Datum vytvoření:", new Date().toLocaleString("cs-CZ"), "", "", ""]
       ];
-      
       // Use selected cell as starting point
       const startRow = selectedStartCell.rowIndex;
       const startCol = selectedStartCell.columnIndex;
-      
       // Insert data
-      const range = sheet.getRangeByIndexes(startRow, startCol, parameters.length, 4);
+      const range = sheet.getRangeByIndexes(startRow, startCol, parameters.length, 5);
       range.values = parameters;
-      
       // Format header
       const headerRange = sheet.getRangeByIndexes(startRow, startCol, 1, 2);
       headerRange.format.font.bold = true;
       headerRange.format.font.size = 14;
       headerRange.format.fill.color = "#667eea";
       headerRange.format.font.color = "white";
-      
       // Format section headers
-      const sectionHeaders = [startRow + 5, startRow + 11, startRow + 16];
+      const sectionHeaders = [startRow + 5, startRow + 11, startRow + 17];
       sectionHeaders.forEach(row => {
         const sectionRange = sheet.getRangeByIndexes(row, startCol, 1, 1);
         sectionRange.format.font.bold = true;
         sectionRange.format.fill.color = "#f0f0f0";
       });
-      
       // Format data table header
-      const tableHeaderRange = sheet.getRangeByIndexes(startRow + 6, startCol, 1, 4);
+      const tableHeaderRange = sheet.getRangeByIndexes(startRow + 6, startCol, 1, 5);
       tableHeaderRange.format.font.bold = true;
       tableHeaderRange.format.fill.color = "#e0e0e0";
-      
       // Format Aktiva row (accounting format without decimals)
-      const aktivaRange = sheet.getRangeByIndexes(startRow + 7, startCol + 1, 1, 3);
+      const aktivaRange = sheet.getRangeByIndexes(startRow + 7, startCol + 1, 1, 4);
       aktivaRange.numberFormat = [["#,##0"]];
-      
       // Format Obrat row (accounting format without decimals)
-      const obratRange = sheet.getRangeByIndexes(startRow + 8, startCol + 1, 1, 3);
+      const obratRange = sheet.getRangeByIndexes(startRow + 8, startCol + 1, 1, 4);
       obratRange.numberFormat = [["#,##0"]];
-      
       // Format Zaměstnanci row (accounting format without decimals)
-      const zamestnanci = sheet.getRangeByIndexes(startRow + 9, startCol + 1, 1, 3);
+      const zamestnanci = sheet.getRangeByIndexes(startRow + 9, startCol + 1, 1, 4);
       zamestnanci.numberFormat = [["#,##0"]];
-      
       // Auto-fit columns
       range.format.autofitColumns();
       
