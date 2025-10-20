@@ -498,35 +498,34 @@ function evaluateData() {
  * Get official category for the current year based on the last two years' data
  */
 function getOfficialCategory(categories) {
-  // Kategorie pro aktuální rok (y0) podle dvou předchozích let (y2, y1) a aktuálního roku (y0)
-  // Pokud v posledních dvou letech byla vyšší kategorie, mění se
-  // Pokud ne, zůstává původní
-  // Vstup: { y3, y2, y1, y0 }
-  // Výstup: string
-  // Pokud některý z předchozích let chybí, bere se poslední dostupná
-  const keys = ['y3', 'y2', 'y1', 'y0'];
-  // Sestav pole kategorií (od nejstarší po nejnovější)
-  const cats = keys.map(k => categories[k]).filter(Boolean);
-  if (cats.length < 3) return 'Nedostatek dat';
-  // Pro aktuální rok (y0) se díváme na y0, y1, y2
-  // Najdeme nejnižší kategorii z těchto tří let
-  // Kategorie: Mikro < Malá < Střední < Velká
+  // Nová logika: Kategorie pro kontrolovaný rok je ta, které účetní jednotka dosáhla ve dvou po sobě jdoucích letech z posledních tří let (y2, y1, y0).
+  // Pokud změna nastala pouze v jednom roce, oficiální kategorie se nemění.
+  // Pokud nejsou k dispozici tři roky, použije se poslední dostupná kategorie.
   const order = [
     'Mikro účetní jednotka',
     'Malá účetní jednotka',
     'Střední účetní jednotka',
     'Velká účetní jednotka'
   ];
-  // Zjistíme indexy kategorií
-  const idxs = [categories.y0, categories.y1, categories.y2].map(cat => order.indexOf(cat));
-  // Nejvyšší dosažená kategorie v posledních 3 letech
-  const maxIdx = Math.max(...idxs);
-  // Počítáme, kolikrát se v posledních 2 letech (y1, y2) vyskytla max kategorie
-  const prevIdxs = [categories.y1, categories.y2].map(cat => order.indexOf(cat));
-  const countMax = prevIdxs.filter(idx => idx === maxIdx).length;
-  // Pokud v obou předchozích letech byla max kategorie, mění se
-  if (countMax === 2) return order[maxIdx];
-  // Jinak zůstává kategorie aktuálního roku
+  // Získáme kategorie za poslední tři roky (od nejstarší po nejnovější)
+  const keys = ['y2', 'y1', 'y0'];
+  const cats = keys.map(k => categories[k]).filter(Boolean);
+  if (cats.length < 1) return 'Nedostatek dat';
+  if (cats.length < 3) {
+    // Pokud nejsou tři roky, použij poslední dostupnou kategorii
+    return cats[cats.length - 1];
+  }
+  // Projdeme všechny možné kategorie od nejvyšší po nejnižší
+  for (let i = order.length - 1; i >= 0; i--) {
+    const cat = order[i];
+    // Hledáme dvě po sobě jdoucí shody této kategorie v cats
+    for (let j = 0; j < cats.length - 1; j++) {
+      if (cats[j] === cat && cats[j + 1] === cat) {
+        return cat;
+      }
+    }
+  }
+  // Pokud žádná kategorie nebyla dosažena ve dvou po sobě jdoucích letech, použij kategorii aktuálního roku
   return categories.y0 || 'Nedostatek dat';
 }
 
