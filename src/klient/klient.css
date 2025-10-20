@@ -1,34 +1,47 @@
-/* Klient Tool Styles */
+/* --- MODERN SAMPLER-LIKE STYLES FOR KLIENT --- */
+body, html {
+    background: #f7fafc !important;
+}
 
 .tool-header {
-  text-align: center;
-  padding: 30px 20px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  margin: -20px -20px 30px -20px;
+    text-align: center;
+    padding: 32px 24px 28px 24px;
+    background: linear-gradient(135deg, #1CB5A6 0%, #0F9688 100%) !important;
+    color: white;
+    margin: -20px -20px 30px -20px;
+    border-radius: 0 0 18px 18px;
+    box-shadow: 0 2px 12px rgba(28,181,166,0.10);
 }
-
 .tool-header h1 {
-  margin: 0 0 10px 0;
-  color: white;
+    margin: 0 0 10px 0;
+    color: #fff;
+    font-size: 2.1rem;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    text-shadow: 0 2px 8px rgba(0,0,0,0.08);
 }
-
 .tool-header p {
-  margin: 0;
-  color: rgba(255, 255, 255, 0.9);
+    margin: 0;
+    color: rgba(255,255,255,0.92);
+    font-size: 1.1rem;
 }
 
 .content-container {
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 20px;
+    max-width: 620px;
+    margin: 0 auto;
+    padding: 10px 4px 8px 4px;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 12px rgba(28,181,166,0.07);
 }
 
 .info-box {
   background: #f5f5f5;
   border-left: 4px solid #667eea;
-  padding: 20px;
+  padding: 8px 10px 6px 10px;
   border-radius: 8px;
+  margin-bottom: 10px;
+  box-shadow: 0 1px 2px rgba(28,181,166,0.04);
 }
 
 .info-box h2 {
@@ -57,109 +70,78 @@
 }
 
 .action-section {
-  text-align: center;
-  padding: 20px;
+    text-align: center;
+    padding: 12px 0 0 0;
 }
-
-body {
-  padding: 0;
-  margin: 0;
+#btn-back-launcher.ms-Button, #btn-restart.ms-Button {
+    background-color: #1CB5A6 !important;
+    border-color: #1CB5A6 !important;
+    font-size: 16px !important;
+    padding: 12px 24px !important;
+    width: 100% !important;
+    max-width: 340px;
+    border-radius: 8px !important;
+    font-weight: 600 !important;
+    box-shadow: 0 2px 8px rgba(28,181,166,0.10) !important;
+    margin: 0 auto 16px auto !important;
+    display: block !important;
+    color: #fff !important;
+    letter-spacing: 0.01em;
+    transition: background 0.2s, box-shadow 0.2s;
 }
-
-main {
-  padding: 20px;
+#btn-back-launcher.ms-Button:hover, #btn-back-launcher.ms-Button:focus,
+#btn-restart.ms-Button:hover, #btn-restart.ms-Button:focus {
+    background-color: #0F9688 !important;
+    border-color: #0F9688 !important;
+    box-shadow: 0 4px 16px rgba(28,181,166,0.16) !important;
+    color: #fff !important;
 }
 
 /* Section Boxes */
 .section-box {
-  background: #ffffff;
-  border: 2px solid #667eea;
-  border-radius: 8px;
-  padding: 20px;
-  margin-bottom: 20px;
+    background: #f7fafc;
+    border-radius: 10px;
+    box-shadow: 0 1px 2px rgba(28,181,166,0.04);
+    padding: 8px 10px 6px 10px;
+    margin-bottom: 10px;
 }
 
 .section-title {
-  margin: 0 0 15px 0;
-  color: #667eea;
-  font-weight: 600;
+    color: #1CB5A6;
+    font-weight: 600;
+    margin-top: 0;
+    font-size: 1.08rem;
+    margin-bottom: 4px;
 }
 
 /* Form Layout */
 .form-row {
-  display: flex;
-  gap: 20px;
-  flex-wrap: wrap;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
 }
 
 .form-field {
-  flex: 1;
-  min-width: 200px;
+    flex: 1 1 220px;
+    min-width: 180px;
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 4px;
 }
 
-.form-field label {
-  display: block;
-  margin-bottom: 8px;
-  font-weight: 500;
+.ms-TextField-field, select.ms-TextField-field {
+    border-radius: 8px;
+    border: 1px solid #e1e1e1;
+    padding: 6px 10px;
+    font-size: 0.98rem;
+    background: #fff;
+    color: #323130;
+    transition: border 0.2s;
 }
 
-/* Year Buttons */
-.year-buttons {
-  display: flex;
-  gap: 15px;
-  flex-wrap: wrap;
-  margin-top: 15px;
-}
-
-.year-button {
-  flex: 1;
-  min-width: 180px;
-  padding: 20px;
-  background: white;
-  border: 2px solid #667eea;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.year-button:hover {
-  background: #f0f0ff;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(102, 126, 234, 0.2);
-}
-
-.year-button.filled {
-  background: #e8f5e9;
-  border-color: #4caf50;
-}
-
-.year-button.filled:hover {
-  background: #c8e6c9;
-}
-
-.year-button-content {
-  text-align: center;
-}
-
-.year-label {
-  font-size: 18px;
-  font-weight: 600;
-  color: #667eea;
-  margin-bottom: 8px;
-}
-
-.year-button.filled .year-label {
-  color: #4caf50;
-}
-
-.year-status {
-  font-size: 12px;
-  color: #999;
-}
-
-.year-button.filled .year-status {
-  color: #4caf50;
-  font-weight: 600;
+.ms-TextField-field:focus, select.ms-TextField-field:focus {
+    border: 1.5px solid #1CB5A6;
+    outline: none;
 }
 
 /* Data Summary */
@@ -230,8 +212,13 @@ main {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
+  background: #1CB5A6;
+  color: #fff;
+  font-size: 1.18rem;
+  font-weight: 700;
+  font-family: 'Segoe UI', 'Arial', sans-serif;
+  letter-spacing: 0.01em;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.08);
   border-radius: 8px 8px 0 0;
 }
 
@@ -312,13 +299,11 @@ main {
 }
 
 .result-label {
-  font-weight: 600;
-  color: #333;
+    color: #764ba2;
+    font-weight: 600;
 }
-
 .result-value {
-  color: #666;
-  margin-left: 10px;
+    font-weight: 500;
 }
 
 .result-success {
@@ -337,29 +322,14 @@ main {
 }
 
 /* Responsive */
-@media (max-width: 768px) {
-  .data-grid {
-    grid-template-columns: 1fr;
-  }
-  
-  .grid-header .grid-cell:not(:first-child),
-  .grid-row .grid-cell:not(:first-child) {
-    display: none;
-  }
-}
-
-/* Print Preview */
-.print-preview {
-  background: #f0f7ff;
-  border: 2px solid #667eea;
-  border-radius: 8px;
-  padding: 15px;
-  margin-top: 12px;
-}
-
-.text-highlight {
-  color: #667eea;
-  font-weight: 600;
-  font-family: 'Courier New', monospace;
-  font-size: 14px;
+@media (max-width: 600px) {
+    .content-container {
+        padding: 6px 1vw;
+    }
+    .section-box, .info-box, .results-section, .print-section {
+        padding: 6px 1vw;
+    }
+    .form-row {
+        gap: 4px;
+    }
 }
