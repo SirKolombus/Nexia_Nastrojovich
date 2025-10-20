@@ -30,6 +30,37 @@
         </header>
 
         <div class="content-container">
+            <!-- Step 0: Kontrolovaná účetní jednotka -->
+            <div class="section-box mb-20">
+                <h3 class="ms-font-l section-title">0. Kontrolovaná účetní jednotka</h3>
+                <div class="form-row">
+                    <div class="form-field">
+                        <label class="ms-Label" for="unit-name">Název účetní jednotky:</label>
+                        <input type="text" id="unit-name" class="ms-TextField-field" placeholder="Zadejte název" />
+                    </div>
+                    <div class="form-field">
+                        <label class="ms-Label" for="unit-ico">IČO:</label>
+                        <input type="text" id="unit-ico" class="ms-TextField-field" placeholder="Zadejte IČO" />
+                    </div>
+                    <div class="form-field">
+                        <label class="ms-Label" for="unit-type">Typ účetní jednotky:</label>
+                        <select id="unit-type" class="ms-TextField-field">
+                            <option value="">Vyberte typ</option>
+                            <option value="Akciová společnost">Akciová společnost</option>
+                            <option value="Družstvo">Družstvo</option>
+                            <option value="Komanditní společnost">Komanditní společnost</option>
+                            <option value="Město">Město</option>
+                            <option value="Otevřený podílový fond">Otevřený podílový fond</option>
+                            <option value="Příspěvková organizace">Příspěvková organizace</option>
+                            <option value="Společnost s ručením omezeným">Společnost s ručením omezeným</option>
+                            <option value="Státní podnik">Státní podnik</option>
+                            <option value="Svěřenský fond">Svěřenský fond</option>
+                            <option value="Veřejná obchodní společnost">Veřejná obchodní společnost</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
             <!-- Step 1: Reporting Date Selection -->
             <div class="section-box mb-20">
                 <h3 class="ms-font-l section-title">1. Účetní období</h3>
