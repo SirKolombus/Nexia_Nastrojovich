@@ -750,25 +750,25 @@ async function printParameters() {
       const proverkaHeader = sheet.getRangeByIndexes(startRow + 5, startCol, 1, 5);
       proverkaHeader.format.font.bold = true;
       proverkaHeader.format.font.size = 14;
-      proverkaHeader.format.fill.color = "#667eea";
+      proverkaHeader.format.fill.color = "#1CB5A6";
       proverkaHeader.format.font.color = "white";
       
       const financialHeader = sheet.getRangeByIndexes(startRow + 10, startCol, 1, 5);
       financialHeader.format.font.bold = true;
       financialHeader.format.font.size = 14;
-      financialHeader.format.fill.color = "#667eea";
+      financialHeader.format.fill.color = "#1CB5A6";
       financialHeader.format.font.color = "white";
       
       const zdrojeHeader = sheet.getRangeByIndexes(startRow + 16, startCol, 1, 5);
       zdrojeHeader.format.font.bold = true;
       zdrojeHeader.format.font.size = 14;
-      zdrojeHeader.format.fill.color = "#667eea";
+      zdrojeHeader.format.fill.color = "#1CB5A6";
       zdrojeHeader.format.font.color = "white";
       
       const vyhodnoceniHeader = sheet.getRangeByIndexes(startRow + 22, startCol, 1, 3);
       vyhodnoceniHeader.format.font.bold = true;
       vyhodnoceniHeader.format.font.size = 14;
-      vyhodnoceniHeader.format.fill.color = "#667eea";
+      vyhodnoceniHeader.format.fill.color = "#1CB5A6";
       vyhodnoceniHeader.format.font.color = "white";
       
       // Format data table header (Years row)
