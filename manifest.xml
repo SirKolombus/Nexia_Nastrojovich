@@ -6,7 +6,7 @@
            xsi:type="TaskPaneApp">
   
   <Id>a1b2c3d4-e5f6-47a8-89ab-0123456789ab</Id>
-  <Version>1.0.0.0</Version>
+  <Version>2.1.1.0</Version>
   <ProviderName>Tomáš Pavlovič</ProviderName>
   <DefaultLocale>en-US</DefaultLocale>
   <DisplayName DefaultValue="Nástrojovič - Nexia"/>
