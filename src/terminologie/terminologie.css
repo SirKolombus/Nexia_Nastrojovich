@@ -204,7 +204,7 @@ ul {
     height: 16px;
     transition: transform 0.2s ease;
     color: #1CB5A6;
-    font-weight: bold;
+    font-weight: 600;
     margin-right: 8px;
 }
 
@@ -470,7 +470,7 @@ ul {
 
 /* Legacy styles for compatibility */
 b {
-    font-weight: bold;
+    font-weight: 600;
 }
 
 .ms-Button.ms-Button--hero .ms-Button-label {
