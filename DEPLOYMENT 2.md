@@ -18,7 +18,9 @@
 ### 1. Povolte GitHub Pages v repozitáři:
 1. Jdi na GitHub: https://github.com/SirKolombus/Nexia_Nastrojovich
 2. **Settings** → **Pages**
-3. V **Source** vyber: **GitHub Actions**
+3. V **Source** vyber: **Deploy from a branch**
+4. V **Branch** vyber: **gh-pages** a **/ (root)**
+5. Klikni **Save**
 
 ### 2. Pushni změny:
 ```bash

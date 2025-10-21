@@ -11,12 +11,12 @@
   <DefaultLocale>en-US</DefaultLocale>
   <DisplayName DefaultValue="Nástrojovič - Nexia"/>
   <Description DefaultValue="Univerzální sada nástrojů pro audit - Vzorkovič, Terminologovič a Prověrkovič."/>
-  <IconUrl DefaultValue="https://sirkolombus.github.io/Nexia_Nastrojovich/assets/icon-32.png"/>
-  <HighResolutionIconUrl DefaultValue="https://sirkolombus.github.io/Nexia_Nastrojovich/assets/icon-64.png"/>
+  <IconUrl DefaultValue="https://localhost:3000/assets/icon-32.png"/>
+  <HighResolutionIconUrl DefaultValue="https://localhost:3000/assets/icon-64.png"/>
   <SupportUrl DefaultValue="https://github.com/SirKolombus/Nexia_Nastrojovich/issues"/>
   
   <AppDomains>
-    <AppDomain>https://sirkolombus.github.io</AppDomain>
+    <AppDomain>https://localhost:3000</AppDomain>
   </AppDomains>
   
   <Hosts>
@@ -24,7 +24,7 @@
   </Hosts>
   
   <DefaultSettings>
-    <SourceLocation DefaultValue="https://sirkolombus.github.io/Nexia_Nastrojovich/launcher.html"/>
+    <SourceLocation DefaultValue="https://localhost:3000/launcher.html"/>
   </DefaultSettings>
   
   <Permissions>ReadWriteDocument</Permissions>
@@ -78,15 +78,15 @@
     
     <Resources>
       <bt:Images>
-        <bt:Image id="Icon.16x16" DefaultValue="https://sirkolombus.github.io/Nexia_Nastrojovich/assets/icon-16.png"/>
-        <bt:Image id="Icon.32x32" DefaultValue="https://sirkolombus.github.io/Nexia_Nastrojovich/assets/icon-32.png"/>
-        <bt:Image id="Icon.80x80" DefaultValue="https://sirkolombus.github.io/Nexia_Nastrojovich/assets/icon-80.png"/>
+        <bt:Image id="Icon.16x16" DefaultValue="https://localhost:3000/assets/icon-16.png"/>
+        <bt:Image id="Icon.32x32" DefaultValue="https://localhost:3000/assets/icon-32.png"/>
+        <bt:Image id="Icon.80x80" DefaultValue="https://localhost:3000/assets/icon-80.png"/>
       </bt:Images>
       
       <bt:Urls>
         <bt:Url id="GetStarted.LearnMoreUrl" DefaultValue="https://github.com/SirKolombus/Nexia_Nastrojovich"/>
-        <bt:Url id="Commands.Url" DefaultValue="https://sirkolombus.github.io/Nexia_Nastrojovich/commands.html"/>
-        <bt:Url id="Launcher.Url" DefaultValue="https://sirkolombus.github.io/Nexia_Nastrojovich/launcher.html"/>
+        <bt:Url id="Commands.Url" DefaultValue="https://localhost:3000/commands.html"/>
+        <bt:Url id="Launcher.Url" DefaultValue="https://localhost:3000/launcher.html"/>
       </bt:Urls>
       
       <bt:ShortStrings>
