@@ -5,7 +5,7 @@
 
 /* global console, document, Excel, Office, localStorage, setTimeout */
 
-// Globální proměnné pro konfiguraci vzorkovače
+// Globální proměnné pro konfiguraci Vzorkoviče
 let reliabilityConfig = {
   confidence: 95,
   expectedError: 5,
@@ -979,10 +979,10 @@ function resetSampler() {
     // Re-apply gating for default mode
     applyUsageModeGating();
     updateTask6GenerateAvailability();
-    showNotification('Vzorkovač byl restartován.');
+    showNotification('Vzorkovič byl restartován.');
   } catch (e) {
-    console.error('Chyba při resetu vzorkovače:', e);
-    showNotification('Chyba při restartu vzorkovače.');
+    console.error('Chyba při resetu Vzorkoviče:', e);
+    showNotification('Chyba při restartu Vzorkoviče.');
   }
 }
 
@@ -2829,7 +2829,7 @@ function _get_selected_value(id) {
 // Formats parameters into a 2D array for writing to the worksheet
 function _format_params(params) {
   const out = [];
-  out.push(['Parametry vzorkovače', '']);
+  out.push(['Parametry Vzorkoviče', '']);
   for (const key in params) {
     if (Object.hasOwnProperty.call(params, key)) {
       const value = params[key];
