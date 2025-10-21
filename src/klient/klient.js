@@ -626,11 +626,12 @@ async function selectCellForPrint() {
         columnIndex: range.columnIndex
       };
       
-  // Calculate end range (parameters array length = 25 rows, 5 columns)
-  const parametersRowCount = 25;  // 4 roky + sekce
-  const parametersColumnCount = 5;
-  const endRowIndex = selectedStartCell.rowIndex + parametersRowCount - 1;
-  const endColumnIndex = selectedStartCell.columnIndex + parametersColumnCount - 1;
+      // Calculate end range dynamically based on actual parameters array
+      // Count rows: get actual parameters that would be generated
+      const parametersRowCount = 31;  // Actual count: 5 (unit info) + 26 (rest including official category)
+      const parametersColumnCount = 5;
+      const endRowIndex = selectedStartCell.rowIndex + parametersRowCount - 1;
+      const endColumnIndex = selectedStartCell.columnIndex + parametersColumnCount - 1;
       
       // Convert column index to letter
       const startCol = getColumnLetter(selectedStartCell.columnIndex);
