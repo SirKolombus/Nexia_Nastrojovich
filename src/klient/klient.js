@@ -553,10 +553,58 @@ function evaluateAuditObligation(data) {
 }
 
 /**
+ * Get official audit obligation for the controlled year (Y0) based on new logic
+ * Returns "ANO" or "NE"
+ */
+function getOfficialAuditObligation(auditObligation, categories, data) {
+  // NOVÁ LOGIKA: Pokud je oficiální kategorie "Malá účetní jednotka", povinnost auditu je vždy "NE"
+  const officialCategory = getOfficialCategory(categories);
+  if (officialCategory === "Malá účetní jednotka") {
+    return "NE";
+  }
+
+  // Pokud není výjimka, použij posloupnost
+  // Krok 1: Shoduje se Y0 a Y1?
+  if (auditObligation.y0 && auditObligation.y1 && auditObligation.y0 === auditObligation.y1) {
+    return auditObligation.y0;
+  }
+  // Krok 2: Shoduje se Y1 a Y2?
+  if (auditObligation.y1 && auditObligation.y2 && auditObligation.y1 === auditObligation.y2) {
+    return auditObligation.y1;
+  }
+  // Krok 3: Shoduje se Y2 a Y3?
+  if (auditObligation.y2 && auditObligation.y3 && auditObligation.y2 === auditObligation.y3) {
+    return auditObligation.y2;
+  }
+  // Krok 4: Pokud ani zde není shoda, použij hodnotu z Y3
+  if (auditObligation.y3) {
+    return auditObligation.y3;
+  }
+  // Fallback - pokud nejsou dostupná data, použij Y0
+  return auditObligation.y0 || "Nedostatek dat";
+}
+
+/**
+ * Helper function to determine if unit was "Malá" from 1.1.2024 onwards
+ */
+function getCategory2024OrLater(categories, data) {
+  // Najdeme první rok >= 2024
+  const keys = ['y3', 'y2', 'y1', 'y0'];
+  for (const key of keys) {
+    if (data.years[key] >= 2024 && categories[key]) {
+      return categories[key];
+    }
+  }
+  return null;
+}
+
+/**
  * Display evaluation results
  */
 function displayResults(results) {
   const auditObligation = evaluateAuditObligation(results.data);
+  const officialAudit = getOfficialAuditObligation(auditObligation, results.categories, results.data);
+  
   const html = `
     <div class="result-item">
       <span class="result-label">První den účetního období:</span>
@@ -596,7 +644,7 @@ function displayResults(results) {
     </div>
     <div class="result-item result-official">
       <span class="result-label">Pro kontrolovaný rok účetní jednotka je povinna k auditu?:</span>
-      <span class="result-value result-success">${auditObligation.y0}</span>
+      <span class="result-value result-success">${officialAudit}</span>
     </div>
   `;
   
@@ -688,6 +736,7 @@ async function printParameters() {
       
       // Evaluate audit obligation
       const auditObligation = evaluateAuditObligation(data);
+      const officialAudit = getOfficialAuditObligation(auditObligation, evaluationResults.categories, data);
       
       // Prepare data for printing
       const parameters = [
@@ -716,8 +765,6 @@ async function printParameters() {
         ["", "", "", "", ""],
         ["Datum vytvoření:", new Date().toLocaleString("cs-CZ"), "", "", ""]
       ];
-      // Determine official audit obligation for the controlled year
-      const officialAudit = auditObligation.y0; // Current year audit obligation
       
       // Insert official category and audit rows
       parameters.push(["", "", "", "", ""]);
