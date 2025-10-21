@@ -452,18 +452,19 @@ Office.onReady((info) => {
   }
   // load persisted value
   try { loadTask6ExcludeSetting(); } catch (e) { /* ignore */ }
-  try { loadTask6PrintTarget(); } catch (e) { /* ignore */ }
   // wire compute adjusted sum button if present
   const task6ComputeBtn = document.getElementById('task6-compute-adjusted-sum');
   if (task6ComputeBtn) task6ComputeBtn.onclick = computeTask6AdjustedSum;
-  // wire print target select
-  const printTargetSel = document.getElementById('task6-print-target');
-  if (printTargetSel) {
-    printTargetSel.onchange = () => { try { saveTask6PrintTarget(printTargetSel.value); } catch (e) { console.warn(e); } };
-  }
+  
   // wire generate sample button in Task6
   const task6GenBtn = document.getElementById('task6-generate-sample');
   if (task6GenBtn) task6GenBtn.onclick = task6GenerateSampleHandler;
+  
+  // wire new cell selection button for parameters (Prověřovič style)
+  const task6SelectCellBtn = document.getElementById('task6-select-cell');
+  if (task6SelectCellBtn) task6SelectCellBtn.onclick = selectCellForParametersPrint;
+  
+  // wire print parameters button (now inside preview area)
   const task6ParamsBtn = document.getElementById('task6-generate-parameters');
   if (task6ParamsBtn) task6ParamsBtn.onclick = task6GenerateParametersHandler;
 
@@ -929,7 +930,7 @@ function resetSampler() {
     const idsToClear = [
   'reliability-factor', 'significance-type-display', 'significance-value-display', 'significance-justification-display',
   'sampling-method', 'data-range', 'value-column', 'task5-result-display', 'task5-size-display', 'task5-use-calculated', 'task5-override-size', 'task5-override-reason', 'task5-confirm-info',
-  'task6-method-display', 'task6-final-size-display', 'task6-exclude-over-significance', 'task6-param-sum-display', 'task6-significant-count-display', 'task6-print-target', 'task6-seed', 'usage-mode-reason'
+  'task6-method-display', 'task6-final-size-display', 'task6-exclude-over-significance', 'task6-param-sum-display', 'task6-significant-count-display', 'task6-seed', 'usage-mode-reason'
     ];
     idsToClear.forEach(id => {
       try {
@@ -944,9 +945,10 @@ function resetSampler() {
     const overrideArea = document.getElementById('task5-override-area'); if (overrideArea) overrideArea.style.display = 'none';
     const countArea = document.getElementById('task6-count-area'); if (countArea) countArea.style.display = 'none';
     const resultsDiv = document.getElementById('results'); if (resultsDiv) resultsDiv.style.display = 'none';
+    const printPreview = document.getElementById('task6-print-preview'); if (printPreview) printPreview.classList.add('hidden');
 
     // Clear stored configs
-  const keys = ['reliabilityConfig','significanceConfig','TotalSumABS','task6ExcludeOverSignificance','task6PrintTarget','task6Seed'];
+  const keys = ['reliabilityConfig','significanceConfig','TotalSumABS','task6ExcludeOverSignificance','task6Seed'];
     keys.forEach(k => { try { localStorage.removeItem(k); } catch (e) {} });
 
   // Reset in-memory vars
@@ -955,6 +957,7 @@ function resetSampler() {
     totalSumABS = null;
     requestedSampleSize = null;
     requestedSampleReason = null;
+    selectedParametersCell = null;
   // Reset usage mode to default and persist
   usageMode = '';
   usageModeReason = '';
@@ -1004,20 +1007,77 @@ async function task6GenerateSampleHandler() {
   }
 }
 
-// Handler for the "Vygenerovat parametry vzorkovače" button
-async function task6GenerateParametersHandler() {
+// Variable to store selected cell for parameter printing
+let selectedParametersCell = null;
+
+// Select cell for printing parameters (matching Prověřovič pattern)
+async function selectCellForParametersPrint() {
   try {
-    const target = _get_selected_value('task6-print-target');
-    if (target && target !== '') {
+    await Excel.run(async (context) => {
+      const range = context.workbook.getSelectedRange();
+      range.load("address, rowIndex, columnIndex");
+      await context.sync();
+      
+      selectedParametersCell = {
+        address: range.address,
+        rowIndex: range.rowIndex,
+        columnIndex: range.columnIndex
+      };
+      
+      // Calculate end range dynamically based on parameters count
+      // Approximate count: gather params and count rows
       const params = gatherSamplerParameters();
-      const ok = await printParameters(params, target);
-      if (ok) {
-        showNotification('Parametry byly vygenerovány.');
-      } else {
-        showNotification('Parametry nebyly vloženy. Zkontrolujte oblast dat a aktivní list.');
-      }
+      const formatted = _format_params(params);
+      const parametersRowCount = formatted.length;
+      const parametersColumnCount = 2; // Parameters use 2 columns (label + value)
+      const endRowIndex = selectedParametersCell.rowIndex + parametersRowCount - 1;
+      const endColumnIndex = selectedParametersCell.columnIndex + parametersColumnCount - 1;
+      
+      // Convert column index to letter
+      const startCol = getColumnLetterFromIndex(selectedParametersCell.columnIndex);
+      const endCol = getColumnLetterFromIndex(endColumnIndex);
+      
+      const rangeText = `${startCol}${selectedParametersCell.rowIndex + 1}:${endCol}${endRowIndex + 1}`;
+      
+      // Show preview
+      document.getElementById("task6-print-range-text").textContent = rangeText;
+      document.getElementById("task6-print-preview").classList.remove("hidden");
+      
+      showNotification("Buňka vybrána: " + selectedParametersCell.address);
+    });
+  } catch (error) {
+    console.error("Chyba při výběru buňky:", error);
+    showNotification("Chyba při výběru buňky: " + error.message);
+  }
+}
+
+// Convert column index to Excel column letter
+function getColumnLetterFromIndex(columnIndex) {
+  let letter = '';
+  let index = columnIndex;
+  
+  while (index >= 0) {
+    letter = String.fromCharCode(65 + (index % 26)) + letter;
+    index = Math.floor(index / 26) - 1;
+  }
+  
+  return letter;
+}
+
+// Handler for the "Vytisknout parametry" button
+async function task6GenerateParametersHandler() {
+  if (!selectedParametersCell) {
+    showNotification('Nejprve vyberte buňku pro tisk parametrů.');
+    return;
+  }
+  
+  try {
+    const params = gatherSamplerParameters();
+    const ok = await printParametersToCell(params, selectedParametersCell);
+    if (ok) {
+      showNotification('Parametry byly vygenerovány.');
     } else {
-      showNotification('Vyberte prosím cíl pro tisk parametrů.');
+      showNotification('Parametry nebyly vloženy. Zkontrolujte oblast dat a aktivní list.');
     }
   } catch (e) {
     console.error('Chyba při generování parametrů:', e);
@@ -2850,6 +2910,44 @@ async function printParameters(params, target) {
   } catch (e) {
     console.error('Chyba při tisku parametrů:', e);
     showNotification('Chyba při tisku parametrů.');
+    return false;
+  }
+}
+
+// Prints parameters to a selected cell (new Prověřovič-style method)
+async function printParametersToCell(params, cellInfo) {
+  if (!cellInfo) {
+    showNotification('Nejprve vyberte buňku pro tisk parametrů.');
+    return false;
+  }
+  
+  try {
+    let success = false;
+    await Excel.run(async (context) => {
+      const sheet = context.workbook.worksheets.getActiveWorksheet();
+      const formatted = _format_params(params);
+      
+      // Write parameters starting from the selected cell
+      const startRow = cellInfo.rowIndex;
+      const startCol = cellInfo.columnIndex;
+      const targetRange = sheet.getRangeByIndexes(startRow, startCol, formatted.length, 2);
+      targetRange.values = formatted;
+      
+      // Highlight author row
+      let authorRowIdx = formatted.findIndex(row => row[0] && row[0].toLowerCase().includes('autor vzorku'));
+      if (authorRowIdx > -1) {
+        const authorCell = sheet.getCell(startRow + authorRowIdx, startCol + 1);
+        authorCell.format.fill.color = '#fff200';
+        authorCell.format.font.bold = true;
+      }
+      
+      await context.sync();
+      success = true;
+    });
+    return success;
+  } catch (e) {
+    console.error('Chyba při tisku parametrů do buňky:', e);
+    showNotification('Chyba při tisku parametrů: ' + e.message);
     return false;
   }
 }
