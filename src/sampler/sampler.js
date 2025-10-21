@@ -929,7 +929,7 @@ function resetSampler() {
     const idsToClear = [
   'reliability-factor', 'significance-type-display', 'significance-value-display', 'significance-justification-display',
   'sampling-method', 'data-range', 'value-column', 'task5-result-display', 'task5-size-display', 'task5-use-calculated', 'task5-override-size', 'task5-override-reason', 'task5-confirm-info',
-  'task6-method-display', 'task6-final-size-display', 'task6-exclude-over-significance', 'task6-param-sum-display', 'task6-significant-count-display', 'task6-print-target', 'task6-seed'
+  'task6-method-display', 'task6-final-size-display', 'task6-exclude-over-significance', 'task6-param-sum-display', 'task6-significant-count-display', 'task6-print-target', 'task6-seed', 'usage-mode-reason'
     ];
     idsToClear.forEach(id => {
       try {
